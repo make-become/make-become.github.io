@@ -90,13 +90,13 @@
       }
 
       .hero {
-        padding: 7.5vh 0 4.5rem;
+        padding: 8.5vh 0 5rem;
         opacity: 0;
         animation: rise 1s var(--ease) 0.12s forwards;
       }
 
       .eyebrow {
-        margin: 0 0 1rem;
+        margin: 0 0 1.15rem;
         font-size: 0.78rem;
         font-weight: 600;
         letter-spacing: 0.16em;
@@ -104,27 +104,40 @@
         color: var(--accent-deep);
       }
 
+      .brand-lockup {
+        display: grid;
+        gap: 0.55rem;
+        max-width: 18ch;
+      }
+
       .brand {
         margin: 0;
-        max-width: 11ch;
         font-family: Fraunces, Georgia, serif;
         font-optical-sizing: auto;
         font-weight: 650;
-        font-size: clamp(3.4rem, 9vw, 6.4rem);
-        line-height: 0.92;
-        letter-spacing: -0.035em;
+        font-size: clamp(3.6rem, 9.5vw, 6.8rem);
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+      }
+
+      .motto {
+        margin: 0;
+        font-family: Fraunces, Georgia, serif;
+        font-optical-sizing: auto;
+        font-weight: 500;
+        font-style: italic;
+        font-size: clamp(1.55rem, 3.4vw, 2.35rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: color-mix(in oklab, var(--ink) 42%, var(--paper));
       }
 
       .lead {
-        margin: 1.4rem 0 0;
-        max-width: 28rem;
-        font-size: clamp(1.05rem, 2.2vw, 1.28rem);
+        margin: 2.35rem 0 0;
+        max-width: 32rem;
+        font-size: clamp(1.02rem, 2vw, 1.2rem);
+        line-height: 1.55;
         color: var(--muted);
-      }
-
-      .lead strong {
-        color: var(--ink);
-        font-weight: 600;
       }
 
       .projects {
@@ -320,14 +333,12 @@
 
       <section class="hero" aria-label="make become">
         <p class="eyebrow">an artware company</p>
-        <h1 class="brand">make become</h1>
+        <div class="brand-lockup">
+          <h1 class="brand">make become</h1>
+          <p class="motto">We don’t just make.</p>
+        </div>
         <p class="lead">
-          <strong>We don’t just make.</strong>
           Software as craft — living tools for images, sound, code, and the spaces between people.
-        </p>
-        <p class="lead" style="margin-top: 0.85rem">
-          Contact:
-          <a href="mailto:vincenzoml@gmail.com"><strong>vincenzoml@gmail.com</strong></a>
         </p>
       </section>
 
