@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Syne:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Syne:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -97,49 +97,38 @@
         animation: rise 1s var(--ease) 0.12s forwards;
       }
 
-      .hero-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1.35fr) minmax(10rem, 0.65fr);
-        align-items: start;
-        gap: 1.25rem 2.5rem;
-      }
-
       .brand-lockup {
         display: grid;
-        gap: 0.7rem;
-        min-width: 0;
+        gap: 0.85rem;
+        max-width: 22rem;
       }
 
       .brand {
         margin: 0;
         font-family: var(--display);
-        font-weight: 700;
-        font-size: clamp(3.2rem, 8.5vw, 5.8rem);
-        line-height: 0.95;
-        letter-spacing: -0.045em;
+        font-weight: 500;
+        font-size: clamp(2.85rem, 7.2vw, 4.85rem);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+      }
+
+      .brand-name {
+        color: var(--ink);
+      }
+
+      .brand-role {
+        color: var(--accent-deep);
+        font-weight: 400;
       }
 
       .motto {
         margin: 0;
         font-family: var(--display);
-        font-weight: 500;
-        font-size: clamp(1.2rem, 2.6vw, 1.65rem);
-        line-height: 1.2;
-        letter-spacing: -0.02em;
+        font-weight: 400;
+        font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+        line-height: 1.25;
+        letter-spacing: -0.015em;
         color: var(--soft);
-      }
-
-      .eyebrow {
-        margin: 0.45rem 0 0;
-        justify-self: end;
-        text-align: right;
-        max-width: 11ch;
-        font-size: 0.82rem;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--accent-deep);
-        line-height: 1.45;
       }
 
       .lead {
@@ -242,7 +231,7 @@
       .name {
         margin: 0;
         font-family: var(--display);
-        font-weight: 700;
+        font-weight: 600;
         font-size: 1.35rem;
         letter-spacing: -0.02em;
       }
@@ -342,12 +331,12 @@
       </header>
 
       <section class="hero" aria-label="make become">
-        <div class="hero-row">
-          <div class="brand-lockup">
-            <h1 class="brand">make become</h1>
-            <p class="motto">We don’t just make.</p>
-          </div>
-          <p class="eyebrow">an artware company</p>
+        <div class="brand-lockup">
+          <h1 class="brand">
+            <span class="brand-name">make become</span>
+            <span class="brand-role"> an artware company</span>
+          </h1>
+          <p class="motto">We don’t just make.</p>
         </div>
         <p class="lead">
           Software as craft — living tools for images, sound, code, and the spaces between people.
