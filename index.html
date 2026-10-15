@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>make become — an artware company</title>
+    <title>make become — an artware studio</title>
     <meta
       name="description"
-      content="make become: an artware company. We don't just make. Anymatix, Claude Switcher, Nearbytes, Prompt Engineering Italia, VoxLogicA 2, Naima."
+      content="make become: an artware studio. We don't just make. Anymatix, Claude Switcher, Nearbytes, Prompt Engineering Italia, VoxLogicA 2, Naima."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -261,6 +261,39 @@
         text-transform: uppercase;
       }
 
+      .card.has-links {
+        position: relative;
+      }
+
+      .card.has-links .stretched::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: var(--radius);
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        justify-content: flex-end;
+      }
+
+      .badge.cnr {
+        position: relative;
+        z-index: 1;
+        background: #e8f0fb;
+        color: #0b4f9c;
+        text-transform: none;
+        letter-spacing: 0.01em;
+        border: 1px solid color-mix(in oklab, #0b4f9c 25%, transparent);
+        transition: background 0.25s var(--ease);
+      }
+
+      .badge.cnr:hover {
+        background: #d4e4f8;
+      }
+
       .desc {
         margin: 0;
         color: var(--muted);
@@ -347,7 +380,7 @@
         <div class="brand-lockup">
           <h1 class="brand">
             <span class="brand-name">make become</span>
-            <span class="brand-role">an artware company</span>
+            <span class="brand-role">an artware studio</span>
           </h1>
         </div>
         <div class="motto-lead">
@@ -463,36 +496,37 @@
             </div>
           </a>
 
-          <a class="card" href="https://voxlogica.org/#voxlogica2" aria-label="VoxLogicA 2">
+          <article class="card has-links" aria-label="VoxLogicA 2">
             <div class="shot">
               <img src="assets/voxlogica2.jpg" alt="VoxLogicA 2: a script and the brain scans it segments" />
             </div>
             <div class="body">
               <div class="meta">
                 <h2 class="name">VoxLogicA 2</h2>
-                <span class="badge">In development</span>
+                <span class="badges"><span class="badge">In development</span><a class="badge cnr" href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI-CNR">fmtlab@cnr.it</a></span>
               </div>
               <p class="desc">
                 Spatial model checking for medical images, rebuilt for hybrid AI: logic and neural networks in one auditable plan.
               </p>
-              <span class="cta">Visit voxlogica.org →</span>
+              <a class="cta stretched" href="https://voxlogica.org/#voxlogica2">Visit voxlogica.org →</a>
             </div>
-          </a>
+          </article>
 
-          <a class="card" href="https://vincenzoml.github.io/naima/" aria-label="Naima">
+          <article class="card has-links" aria-label="Naima">
             <div class="shot">
               <img src="assets/naima.jpg" alt="Naima logo: We put the AI in your main" />
             </div>
             <div class="body">
               <div class="meta">
                 <h2 class="name">Naima</h2>
+                <span class="badges"><a class="badge cnr" href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI-CNR">fmtlab@cnr.it</a></span>
               </div>
               <p class="desc">
                 A silent software house of AI agents: tests, reviews, gates and formal methods, applied for you.
               </p>
-              <span class="cta">Open project →</span>
+              <a class="cta stretched" href="https://vincenzoml.github.io/naima/">Open project →</a>
             </div>
-          </a>
+          </article>
         </div>
       </section>
 
