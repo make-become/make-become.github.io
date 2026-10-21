@@ -165,10 +165,38 @@
         animation: rise 0.9s var(--ease) 0.28s forwards;
       }
 
+      .studio {
+        margin: 0 0 3rem;
+        max-width: 38rem;
+        font-size: clamp(1rem, 1.8vw, 1.1rem);
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      .studio a {
+        color: var(--ink);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+        text-decoration-color: color-mix(in oklab, var(--ink) 30%, transparent);
+        transition: text-decoration-color 0.2s var(--ease), color 0.2s var(--ease);
+      }
+
+      .studio a:hover {
+        color: var(--accent-deep);
+        text-decoration-color: currentColor;
+      }
+
       .grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1.1rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      @media (max-width: 1080px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
       }
 
       .card {
@@ -392,6 +420,12 @@
       </section>
 
       <section class="projects" aria-label="Projects">
+        <p class="studio">
+          make become is a one-person studio, plus AI. The days go to research at the
+          <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a> of
+          <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>;
+          the free time goes into the software below.
+        </p>
         <p class="section-label">Projects</p>
         <div class="grid">
           <!-- Hidden for now (Transient); remove the comment markers to show it again.
@@ -426,6 +460,38 @@
             </div>
           </a>
 
+          <article class="card has-links" aria-label="Nearbytes">
+            <div class="shot">
+              <img src="assets/nearbytes.jpg" alt="Nearbytes app preview" />
+            </div>
+            <div class="body">
+              <div class="meta">
+                <h2 class="name">Nearbytes</h2>
+                <span class="badges"><a class="badge cnr" href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI-CNR">fmtlab@cnr.it</a></span>
+              </div>
+              <p class="desc">
+                The post-cloud solution to store and communicate.
+              </p>
+              <a class="cta stretched" href="https://nearbytes.github.io/nearbytes/">Open project →</a>
+            </div>
+          </article>
+
+          <article class="card has-links" aria-label="VoxLogicA 2">
+            <div class="shot">
+              <img src="assets/voxlogica2.jpg" alt="VoxLogicA 2: a script and the brain scans it segments" />
+            </div>
+            <div class="body">
+              <div class="meta">
+                <h2 class="name">VoxLogicA 2</h2>
+                <span class="badges"><span class="badge">In development</span><a class="badge cnr" href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI-CNR">fmtlab@cnr.it</a></span>
+              </div>
+              <p class="desc">
+                Spatial model checking for medical images, rebuilt for hybrid AI: logic and neural networks in one auditable plan.
+              </p>
+              <a class="cta stretched" href="https://voxlogica.org/#voxlogica2">Visit voxlogica.org →</a>
+            </div>
+          </article>
+
           <!-- Hidden for now (CreaBnB); remove the comment markers to show it again.
           <a class="card" href="https://make-become.github.io/creabnb/" aria-label="CreaBnB">
             <div class="shot">
@@ -442,21 +508,6 @@
             </div>
           </a>
           -->
-
-          <a class="card" href="https://nearbytes.github.io/nearbytes/" aria-label="Nearbytes">
-            <div class="shot">
-              <img src="assets/nearbytes.jpg" alt="Nearbytes app preview" />
-            </div>
-            <div class="body">
-              <div class="meta">
-                <h2 class="name">Nearbytes</h2>
-              </div>
-              <p class="desc">
-                The post-cloud solution to store and communicate.
-              </p>
-              <span class="cta">Open project →</span>
-            </div>
-          </a>
 
           <a
             class="card"
@@ -480,22 +531,6 @@
               <span class="cta">Visit promptengineering.it →</span>
             </div>
           </a>
-
-          <article class="card has-links" aria-label="VoxLogicA 2">
-            <div class="shot">
-              <img src="assets/voxlogica2.jpg" alt="VoxLogicA 2: a script and the brain scans it segments" />
-            </div>
-            <div class="body">
-              <div class="meta">
-                <h2 class="name">VoxLogicA 2</h2>
-                <span class="badges"><span class="badge">In development</span><a class="badge cnr" href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI-CNR">fmtlab@cnr.it</a></span>
-              </div>
-              <p class="desc">
-                Spatial model checking for medical images, rebuilt for hybrid AI: logic and neural networks in one auditable plan.
-              </p>
-              <a class="cta stretched" href="https://voxlogica.org/#voxlogica2">Visit voxlogica.org →</a>
-            </div>
-          </article>
 
           <article class="card has-links" aria-label="Naima">
             <div class="shot">
