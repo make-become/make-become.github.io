@@ -91,13 +91,23 @@
         box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 45%, transparent);
       }
 
+      /* The hero in two rows: the wordmark across the top, then the motto on the left and who is
+         behind the studio on the right, side by side, so the projects start within the first screen.
+         On a phone the three stack. */
       .hero {
-        padding: 8.5vh 0 5rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        grid-template-areas: "brand brand" "motto studio";
+        column-gap: clamp(2rem, 5vw, 4.5rem);
+        row-gap: clamp(1.75rem, 4.5vh, 2.75rem);
+        align-items: start;
+        padding: clamp(2.25rem, 7vh, 4.5rem) 0 clamp(2.5rem, 6vh, 3.75rem);
         opacity: 0;
         animation: rise 1s var(--ease) 0.12s forwards;
       }
 
       .brand-lockup {
+        grid-area: brand;
         display: grid;
         gap: 0;
       }
@@ -137,9 +147,9 @@
       }
 
       .motto-lead {
+        grid-area: motto;
         display: grid;
         gap: 0.7rem;
-        margin-top: 2.75rem;
         max-width: 34rem;
       }
 
@@ -176,8 +186,11 @@
       }
 
       .studio {
-        margin: 0 0 3rem;
-        max-width: 38rem;
+        grid-area: studio;
+        margin: 0;
+        padding-left: clamp(1rem, 2vw, 1.5rem);
+        border-left: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+        max-width: 34rem;
         font-size: clamp(1rem, 1.8vw, 1.1rem);
         line-height: 1.6;
         color: var(--muted);
@@ -383,7 +396,15 @@
         }
 
         .hero {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-areas: "brand" "motto" "studio";
+          row-gap: 1.5rem;
           padding-top: 5vh;
+        }
+
+        .studio {
+          padding-left: 0;
+          border-left: 0;
         }
 
         .grid {
@@ -430,17 +451,17 @@
             Software as craft — living tools for images, sound, code, and the spaces between people.
           </p>
         </div>
-      </section>
-
-      <section class="projects" aria-label="Projects">
         <p class="studio">
-          make become: 40+ years of coding and computer science expertise,
-          plus AI; researcher at the
+          make become: 40+ years of coding and computer science expertise;
+          researcher at the
           <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a> of
           <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>,
           teacher of Program Semantics at the <a href="https://www.unipi.it/">University of Pisa</a>,
           AI architect, and maker of software, personal and commissioned.
         </p>
+      </section>
+
+      <section class="projects" aria-label="Projects">
         <p class="section-label">Projects</p>
         <div class="grid">
           <!-- Hidden for now (Transient); remove the comment markers to show it again.
