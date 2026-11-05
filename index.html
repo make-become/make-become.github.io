@@ -388,6 +388,84 @@
         color: var(--accent-deep);
       }
 
+      /* Small utilities: a quieter list under the projects, one row per tool. */
+      .utilities {
+        padding: 0 0 4.5rem;
+      }
+
+      .tools {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.25rem 1rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .tool {
+        display: grid;
+        grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+        gap: 0.9rem;
+        align-items: center;
+        padding: 0.8rem 0.9rem;
+        border-radius: 0.9rem;
+        color: inherit;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: background 0.25s var(--ease), border-color 0.25s var(--ease);
+        opacity: 0;
+        animation: rise 0.9s var(--ease) 0.8s forwards;
+      }
+
+      .tool:hover {
+        background: var(--card);
+        border-color: color-mix(in oklab, var(--ink) 8%, transparent);
+      }
+
+      .tool img {
+        width: 2.75rem;
+        height: 2.75rem;
+        display: block;
+      }
+
+      .tool-name {
+        margin: 0;
+        font-family: Manrope, system-ui, sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: -0.01em;
+      }
+
+      .tool-desc {
+        margin: 0.1rem 0 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+
+      .tool-go {
+        color: var(--accent-deep);
+        font-weight: 600;
+        transition: transform 0.25s var(--ease);
+      }
+
+      .tool:hover .tool-go {
+        transform: translateX(3px);
+      }
+
+      @media (max-width: 760px) {
+        .tools {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tool {
+          opacity: 1;
+          animation: none;
+        }
+      }
+
       .foot {
         display: flex;
         flex-wrap: wrap;
@@ -597,7 +675,7 @@
           -->
 
 
-          <!-- Hidden for now (Prompt Engineering Italia, not launched yet; Claude Switcher); remove the comment markers to show them again.
+          <!-- Hidden for now (Prompt Engineering Italia, not launched yet); remove the comment markers to show it again.
           <a
             class="card"
             href="https://www.promptengineering.it/"
@@ -620,23 +698,34 @@
               <span class="cta">Visit promptengineering.it →</span>
             </div>
           </a>
-
-          <a class="card" href="https://make-become.github.io/claude-switcher/" aria-label="Claude Switcher">
-            <div class="shot">
-              <img src="assets/claude-switcher.jpg" alt="Claude Switcher menu with three profiles" />
-            </div>
-            <div class="body">
-              <div class="meta">
-                <h2 class="name">Claude Switcher</h2>
-              </div>
-              <p class="desc">
-                Several Claude Desktop accounts side by side on one Mac, one Dock icon each.
-              </p>
-              <span class="cta">Open project →</span>
-            </div>
-          </a>
           -->
         </div>
+      </section>
+
+      <section class="utilities" aria-label="Small utilities">
+        <p class="section-label">Small utilities</p>
+        <ul class="tools">
+          <li>
+            <a class="tool" href="https://make-become.github.io/lid-awake/">
+              <img src="assets/lid-awake-icon.png" alt="" />
+              <div>
+                <h3 class="tool-name">Lid Awake</h3>
+                <p class="tool-desc">Keeps a MacBook running with the lid closed, for one long job. Mac.</p>
+              </div>
+              <span class="tool-go" aria-hidden="true">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="tool" href="https://make-become.github.io/claude-switcher/">
+              <img src="assets/claude-switcher-icon.png" alt="" />
+              <div>
+                <h3 class="tool-name">Claude Switcher</h3>
+                <p class="tool-desc">Several Claude Desktop accounts side by side, one icon each. Mac and Windows.</p>
+              </div>
+              <span class="tool-go" aria-hidden="true">→</span>
+            </a>
+          </li>
+        </ul>
       </section>
 
       <footer class="foot">
