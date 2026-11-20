@@ -14,8 +14,8 @@
     <meta property="og:image" content="https://make-become.github.io/assets/brand/make-become-logo-dark-1200.png" />
     <meta property="og:url" content="https://make-become.github.io/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/png" href="assets/brand/make-become-avatar-160.png" />
-    <link rel="apple-touch-icon" href="assets/brand/make-become-avatar-320.png" />
+    <link rel="icon" type="image/png" href="assets/brand/make-become-avatar-160.png?v=2" />
+    <link rel="apple-touch-icon" href="assets/brand/make-become-avatar-320.png?v=2" />
     <script>document.documentElement.classList.add("js");</script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -59,6 +59,7 @@
       .label, .nav a, .bar-nav a { color: var(--make); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-decoration: none; transition: color 0.25s; }
       .nav a:hover, .nav a:focus-visible, .bar-nav a:hover, .bar-nav a:focus-visible { color: var(--become); }
       .label { margin: 0 0 var(--in); }
+      .label + .intro { margin: calc(6px - var(--in)) 0 var(--in); font-size: 14.5px; line-height: 1.5; }
 
       /* Hero: the outro, drawn live (assets/site.js). */
       .hero { position: relative; height: 100vh; height: 100svh; min-height: 480px; overflow: hidden; }
@@ -190,6 +191,7 @@
       <section class="work wrap" id="work" aria-label="Work">
         <!-- Hidden for now (Transient): images and copy are in assets/transient.jpg; add a card here to show it again. -->
         <p class="label">work</p>
+        <p class="intro">Recent work. Forty years of software came before it.</p>
         <ul class="cards">
           <li class="card">
             <div class="frame" data-fx="split"><img src="assets/tiles/anymatix.webp" width="800" height="500" alt="Three images made with Anymatix, shown as cards" /></div>
