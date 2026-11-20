@@ -53,13 +53,14 @@
       .skip:focus { top: 12px; }
       .wrap { width: min(1280px, 100% - 2 * var(--gut)); margin-inline: auto; }
 
-      /* The split, as type: red fringe left, blue right, on hover and focus. */
-      .split { transition: text-shadow 0.3s var(--ease); }
-      a:hover .split, a:focus-visible .split, .card:hover .split, .card:focus-within .split, .split:hover {
-        text-shadow: -0.035em 0 rgb(255 59 59 / 0.55), 0.035em 0 rgb(77 141 255 / 0.55);
-      }
+      /* One spacing scale: a section gap between blocks, an inner gap inside them. */
+      :root { --sec: clamp(72px, 9vw, 128px); --in: 24px; }
+      /* One label style for section names and navigation. */
+      .label, .nav a, .bar-nav a { color: var(--make); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-decoration: none; transition: color 0.25s; }
+      .nav a:hover, .nav a:focus-visible, .bar-nav a:hover, .bar-nav a:focus-visible { color: var(--become); }
+      .label { margin: 0 0 var(--in); }
 
-      /* Hero: the logo assembles as in the outro, then the signal stays alive under the pointer. */
+      /* Hero: the outro, drawn live (assets/site.js). */
       .hero { position: relative; height: 100vh; height: 100svh; min-height: 480px; overflow: hidden; }
       .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.5s; }
       .hero h1 { margin: 0; position: absolute; inset: 0; display: grid; place-items: center; }
@@ -67,96 +68,94 @@
       .hero.on canvas { opacity: 1; }
       .js .hero h1 img, .hero.on h1 img { opacity: 0; }
       .js.still .hero h1 img { opacity: 1; }
-      .nav { position: absolute; z-index: 2; top: 0; left: 0; right: 0; display: flex; justify-content: flex-end; gap: clamp(18px, 3vw, 36px); padding: 22px var(--gut); font-size: 14px; font-weight: 600; letter-spacing: 0.02em; }
-      .nav a { color: var(--make); text-decoration: none; transition: color 0.25s; }
-      .nav a:hover, .nav a:focus-visible { color: var(--become); }
-      .replay { position: absolute; z-index: 2; left: var(--gut); bottom: 20px; padding: 6px 0; background: none; border: 0; color: var(--slogan); font: 600 13px/1 Manrope, system-ui, sans-serif; letter-spacing: 0.04em; cursor: pointer; opacity: 0; transition: opacity 0.4s, color 0.25s; }
-      .hero.on .replay { opacity: 1; }
-      .replay:hover, .replay:focus-visible { color: var(--become); }
-      .cue { position: absolute; z-index: 2; left: 50%; bottom: 0; width: 1px; height: 64px; background: linear-gradient(transparent, var(--slogan)); transform-origin: bottom; animation: cue 2.6s var(--ease) infinite; }
+      .nav { position: absolute; z-index: 2; top: 0; left: 0; right: 0; display: flex; justify-content: flex-end; gap: clamp(18px, 3vw, 36px); padding: 24px var(--gut); }
+      .cue { position: absolute; z-index: 2; left: 50%; bottom: 0; width: 1px; height: 56px; background: linear-gradient(transparent, var(--slogan)); transform-origin: bottom; animation: cue 2.6s var(--ease) infinite; }
       @keyframes cue { 0% { transform: scaleY(0); opacity: 0; } 40% { opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
 
-      /* The gate: the page opens on the hero alone; the way out brings the content in (assets/site.js). */
+      /* The gate: the page opens on the hero alone; the switch-off brings the content in (assets/site.js). */
       .gate main, .gate .end { display: none; }
       .gate .hero { cursor: pointer; }
-      .enter { position: absolute; z-index: 2; left: 50%; bottom: 72px; transform: translateX(-50%); padding: 8px 12px; background: none; border: 0; color: var(--make); font: 600 13px/1 Manrope, system-ui, sans-serif; letter-spacing: 0.18em; cursor: pointer; transition: color 0.25s; }
+      .enter { position: absolute; z-index: 2; left: 50%; bottom: 68px; transform: translateX(-50%); padding: 8px 12px; background: none; border: 0; color: var(--make); font: 600 13px/1 Manrope, system-ui, sans-serif; letter-spacing: 0.12em; cursor: pointer; transition: color 0.25s; }
       .enter:hover, .enter:focus-visible { color: var(--become); }
       .leaving .hero { position: fixed; inset: 0; z-index: 50; height: 100%; min-height: 0; pointer-events: none; }
-      .leaving .hero .nav, .leaving .hero .replay, .leaving .hero .enter, .leaving .hero .cue { opacity: 0; transition: opacity 0.25s; }
+      .leaving .hero .nav, .leaving .hero .enter, .leaving .hero .cue { opacity: 0; transition: opacity 0.25s; }
       .leaving:not(.shown) main, .leaving:not(.shown) .end { visibility: hidden; }
       .inside .hero { display: none; }
       .shown main { animation: switchon 0.32s cubic-bezier(0.2, 0.9, 0.2, 1) both; transform-origin: 50% 50vh; }
       @keyframes switchon { 0% { transform: scale(1, 0.004); filter: brightness(6); } 60% { transform: scale(1, 1.01); filter: brightness(1.4); } 100% { transform: none; filter: none; } }
 
-      /* The bar over the content: the mark goes back to the start. */
-      .bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 0; }
-      .mark { text-decoration: none; font-size: 18px; letter-spacing: -0.015em; }
-      .mark span { color: var(--make); font-weight: 600; font-size: 0.86em; }
-      .mark b { color: var(--become); font-weight: 800; }
-      .bar-nav { display: flex; gap: clamp(18px, 3vw, 36px); font-size: 14px; font-weight: 600; letter-spacing: 0.02em; }
-      .bar-nav a { color: var(--make); text-decoration: none; transition: color 0.25s; }
-      .bar-nav a:hover, .bar-nav a:focus-visible { color: var(--become); }
+      /* The bar over the content: the mark (from the asset kit) goes back to the start. */
+      .bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; }
+      .mark { display: block; margin-left: -10px; line-height: 0; }
+      .mark img { display: block; height: 44px; width: auto; }
+      .bar-nav { display: flex; gap: clamp(18px, 3vw, 36px); }
 
-      /* Who */
-      .intro { padding: clamp(36px, 7vh, 90px) 0 0; }
-      .lede { margin: 0; max-width: 24ch; font-size: clamp(30px, 4.2vw, 58px); line-height: 1.08; letter-spacing: -0.03em; }
+      /* Who: as wide as three cards, one step above them. */
+      .intro { padding: calc(var(--sec) * 0.5) 0 0; }
+      .intro > * { max-width: min(100%, 954px); }
+      .lede { margin: 0; font-size: clamp(26px, 3.3vw, 44px); line-height: 1.12; letter-spacing: -0.028em; }
       .lede .a { color: var(--make); font-weight: 600; }
       .lede .b { color: var(--become); font-weight: 800; }
-      .research { margin: 20px 0 0; max-width: 64ch; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.7; }
-      .research a, .more a.go { color: var(--become); text-decoration: none; border-bottom: 1px solid var(--line); transition: border-color 0.25s; }
-      .research a:hover, .more a.go:hover, .research a:focus-visible, .more a.go:focus-visible { border-color: var(--become); }
+      .research { margin: var(--in) 0 0; font-size: clamp(16px, 1.3vw, 18px); line-height: 1.7; }
+      .research a { color: var(--become); text-decoration: none; border-bottom: 1px solid var(--line); transition: border-color 0.25s; }
+      .research a:hover, .research a:focus-visible { border-color: var(--become); }
 
-      /* The works: small cards in a grid, several in view at once. */
-      .work { padding: clamp(48px, 9vh, 100px) 0 0; }
-      .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 268px), 1fr)); gap: clamp(14px, 1.6vw, 22px); margin: 0; padding: 0; list-style: none; }
-      .card { position: relative; display: flex; flex-direction: column; overflow: hidden; background: #191c21; border: 1px solid var(--line); border-radius: 14px; transition: border-color 0.3s, background 0.3s, transform 0.3s var(--ease); }
-      .card:hover, .card:focus-within { border-color: #3a4049; background: #1c2026; transform: translateY(-3px); }
-      .frame { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--ground); border-bottom: 1px solid var(--line); }
+      /* The works: small cards, equal heights, fixed slots (picture, title, meta, three lines, address). */
+      .work { margin-top: var(--sec); }
+      .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 22px; margin: 0; padding: 0; list-style: none; }
+      .card { position: relative; display: flex; flex-direction: column; overflow: hidden; background: #191c21; border: 1px solid var(--line); border-radius: 12px; transition: border-color 0.3s, background 0.3s, transform 0.3s var(--ease); }
+      .card:hover, .card:focus-within { border-color: #3a4049; background: #1c2026; transform: translateY(-2px); }
+      .frame { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #111317; border-bottom: 1px solid var(--line); }
       .frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
       .frame canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: none; pointer-events: none; }
       .frame.on canvas { display: block; }
       .frame.on img, .js .frame[data-fx] img { visibility: hidden; } /* the canvas draws the picture; the plain one stays without JS, with reduced motion, or if WebGL fails */
       .js.still .frame img, .js .frame.off img { visibility: visible; }
-      .body { display: flex; flex: 1; flex-direction: column; gap: 8px; padding: 16px 18px 18px; }
-      .no { color: var(--slogan); font-size: 12px; font-weight: 600; letter-spacing: 0.14em; font-variant-numeric: tabular-nums; }
-      .card h2 { margin: 0; color: var(--become); font-size: 22px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+      .body { display: flex; flex: 1; flex-direction: column; padding: 18px 18px 16px; }
+      .card h2 { margin: 0; color: var(--become); font-size: 19px; font-weight: 800; line-height: 1.2; letter-spacing: -0.015em; }
       .card h2 a { text-decoration: none; }
-      .card h2 a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: 14px; }
+      .card h2 a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: 12px; }
       .card h2 a:focus-visible { outline: none; }
       .card h2 a:focus-visible::after { outline: 2px solid var(--blue); outline-offset: -2px; }
-      .desc { margin: 0; font-size: 14.5px; line-height: 1.5; }
-      .tags { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 0; }
-      .tag { padding: 2px 7px 1px; border: 1px solid var(--line); border-radius: 2px; color: var(--make); font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-decoration: none; transition: color 0.25s, border-color 0.25s; }
-      a.tag:hover, a.tag:focus-visible { color: var(--become); border-color: var(--make); }
-      .go { margin-top: auto; padding-top: 8px; color: var(--make); font-size: 13.5px; font-weight: 600; transition: color 0.25s; }
+      .meta { margin: 6px 0 0; color: var(--make); font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; }
+      .desc { margin: 12px 0 0; min-height: 4.5em; font-size: 14.5px; line-height: 1.5; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+      .go { margin-top: auto; padding-top: 16px; color: var(--make); font-size: 13px; font-weight: 600; transition: color 0.25s; }
       .card:hover .go, .card:focus-within .go { color: var(--become); }
+      /* Phone: a compact list, a small square picture on the left. */
+      @media (max-width: 560px) {
+        .cards { gap: 12px; }
+        .card { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: stretch; }
+        .card:hover, .card:focus-within { transform: none; }
+        .frame { aspect-ratio: 1; align-self: center; margin: 12px 0 12px 12px; border: 1px solid var(--line); border-radius: 8px; }
+        .body { padding: 12px 14px; }
+        .card h2 { font-size: 17px; }
+        .meta { margin-top: 2px; }
+        .desc { margin-top: 6px; min-height: 0; font-size: 13.5px; -webkit-line-clamp: 2; }
+        .go { display: none; }
+      }
+
       /* Small utilities: a quiet list. */
-      .tools { margin-top: clamp(56px, 10vh, 110px); }
-      .label { margin: 0 0 14px; color: var(--make); font-size: 13px; font-weight: 600; letter-spacing: 0.16em; }
-      .tools ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 0 clamp(16px, 3vw, 40px); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-      .tool { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
-      .tool img { display: block; width: 44px; height: 44px; transition: filter 0.3s var(--ease); }
-      .tool:hover img, .tool:focus-visible img { filter: drop-shadow(-2px 0 0 rgb(255 59 59 / 0.7)) drop-shadow(2px 0 0 rgb(77 141 255 / 0.7)); }
-      .tool h3 { margin: 0; color: var(--become); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+      .tools { margin-top: var(--sec); }
+      .tools ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 0 40px; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+      .tool { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+      .tool img { display: block; width: 40px; height: 40px; }
+      .tool h3 { margin: 0; color: var(--become); font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; }
       .tool p { margin: 2px 0 0; font-size: 14px; line-height: 1.45; }
       .tool .arrow { color: var(--make); transition: transform 0.3s var(--ease), color 0.3s; }
-      .tool:hover .arrow { transform: translateX(4px); color: var(--become); }
+      .tool:hover .arrow, .tool:focus-visible .arrow { transform: translateX(4px); color: var(--become); }
 
-      /* The end: the slogan, as running text. */
-      .end { padding: clamp(100px, 18vh, 200px) 0 40px; }
-      .say { margin: 0; font-size: clamp(28px, 4vw, 52px); line-height: 1.06; letter-spacing: -0.03em; }
+      /* The end: one closing block, the slogan, the date, then the footer line. */
+      .end { margin-top: var(--sec); padding-bottom: 40px; }
+      .say { margin: 0; font-size: clamp(26px, 3.3vw, 44px); line-height: 1.1; letter-spacing: -0.028em; }
       .say .a { color: var(--make); font-weight: 600; }
       .say .b { color: var(--become); font-weight: 800; }
-      .since { margin: 26px 0 0; color: var(--slogan); font-size: 15px; letter-spacing: 0.02em; }
-      .links { display: flex; flex-wrap: wrap; gap: 10px clamp(18px, 3vw, 40px); margin: clamp(70px, 12vh, 130px) 0 0; padding-top: 22px; border-top: 1px solid var(--line); font-weight: 600; }
-      .links a { color: var(--become); text-decoration: none; }
-      .links a span { color: var(--slogan); font-weight: 400; }
-      .small { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; font-size: 14px; color: var(--slogan); }
-      .small a { text-decoration: none; color: var(--make); transition: color 0.25s; }
-      .small a:hover, .small a:focus-visible { color: var(--become); }
+      .since { margin: 12px 0 0; color: var(--slogan); font-size: 15px; }
+      .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 28px; margin-top: calc(var(--in) * 2); padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; }
+      .foot nav { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+      .foot a { color: var(--make); text-decoration: none; font-weight: 600; transition: color 0.25s; }
+      .foot a:hover, .foot a:focus-visible { color: var(--become); }
       .profiles { display: flex; gap: 16px; }
       .profiles svg { display: block; width: 17px; height: 17px; fill: currentColor; }
-
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
         .cue { display: none; }
@@ -173,14 +172,13 @@
         <a href="#work">work</a>
         <a href="https://vincenzoml.github.io">research</a>
       </nav>
-      <button class="replay" type="button" hidden>play again</button>
       <button class="enter" type="button" hidden>enter</button>
       <span class="cue" aria-hidden="true"></span>
     </header>
 
     <main>
       <div class="bar wrap">
-        <a class="mark split" href="#top" aria-label="make become, back to the start"><span>make</span> <b>become</b></a>
+        <a class="mark" href="#top"><img src="assets/brand/make-become-mark-dark-transparent-outlined.svg" width="634" height="231" alt="make become, back to the start" /></a>
         <nav class="bar-nav" aria-label="Sections"><a href="#work">work</a><a href="https://vincenzoml.github.io">research</a></nav>
       </div>
       <section class="intro wrap" aria-label="About">
@@ -194,39 +192,37 @@
         <p class="label">work</p>
         <ul class="cards">
           <li class="card">
-            <div class="frame" data-fx="split"><img src="assets/anymatix-start.jpg" width="1600" height="822" alt="" /></div>
+            <div class="frame" data-fx="split"><img src="assets/tiles/anymatix.webp" width="800" height="500" alt="Three images made with Anymatix, shown as cards" /></div>
             <div class="body">
-              <span class="no">01</span>
-              <h2><a class="split" href="https://www.anymatix.com/">Anymatix</a></h2>
+              <h2><a href="https://www.anymatix.com/">Anymatix</a></h2>
+              <p class="meta">Desktop app · free</p>
               <p class="desc">Desktop app for generative image and video work: every step is a card you link, group and reuse.</p>
               <span class="go" aria-hidden="true">anymatix.com</span>
             </div>
           </li>
           <li class="card">
-            <div class="frame" data-fx="rise"><img src="assets/naima.svg?v=2" width="1600" height="1000" alt="" /></div>
+            <div class="frame" data-fx="rise"><img src="assets/tiles/naima.webp" width="800" height="500" alt="The NAIMA mark: We put the AI in your main." /></div>
             <div class="body">
-              <span class="no">02</span>
-              <h2><a class="split" href="https://naima-project.github.io/naima/">NAIMA</a></h2>
-              <p class="tags"><span class="tag">beta</span><a class="tag" href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR">fmtlab@cnr.it</a></p>
+              <h2><a href="https://naima-project.github.io/naima/">NAIMA</a></h2>
+              <p class="meta">Beta · with CNR</p>
               <p class="desc">Planned, tested, proven: formal methods and software engineering for everyone who builds with AI.</p>
               <span class="go" aria-hidden="true">naima-project.github.io/naima</span>
             </div>
           </li>
           <li class="card">
-            <div class="frame" data-fx="lens"><img src="assets/voxlogica2.jpg?v=2" width="1520" height="950" alt="" /></div>
+            <div class="frame" data-fx="lens"><img src="assets/tiles/voxlogica2.webp" width="800" height="500" alt="VoxLogicA 2 segmenting a brain scan, in three views and in 3D" /></div>
             <div class="body">
-              <span class="no">03</span>
-              <h2><a class="split" href="https://voxlogica.org/#voxlogica2">VoxLogicA&nbsp;2</a></h2>
-              <p class="tags"><span class="tag">in development</span><a class="tag" href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR">fmtlab@cnr.it</a></p>
+              <h2><a href="https://voxlogica.org/#voxlogica2">VoxLogicA&nbsp;2</a></h2>
+              <p class="meta">In development · with CNR</p>
               <p class="desc">Spatial model checking for medical images, rebuilt for hybrid AI: logic and neural networks in one auditable plan.</p>
               <span class="go" aria-hidden="true">voxlogica.org</span>
             </div>
           </li>
           <li class="card">
-            <div class="frame" data-fx="register"><img src="assets/learn-with-love.jpg" width="1520" height="950" alt="" /></div>
+            <div class="frame" data-fx="register"><img src="assets/tiles/learn-with-love.webp" width="800" height="500" alt="Learn With Love: the unicorn and the title" /></div>
             <div class="body">
-              <span class="no">04</span>
-              <h2><a class="split" href="https://learn-with-love.github.io/">Learn With Love</a></h2>
+              <h2><a href="https://learn-with-love.github.io/">Learn With Love</a></h2>
+              <p class="meta">Games · free</p>
               <p class="desc">Small games for learning, with a unicorn for a friend. Free, no ads, no personal data beyond a first name.</p>
               <span class="go" aria-hidden="true">learn-with-love.github.io</span>
             </div>
@@ -238,14 +234,14 @@
           <ul>
             <li>
               <a class="tool" href="https://make-become.github.io/lid-awake/">
-                <img src="assets/lid-awake-icon.png" width="128" height="128" alt="" />
+                <img src="assets/lid-awake-icon.png" width="128" height="128" alt="" loading="lazy" />
                 <div><h3>Lid Awake</h3><p>Keeps a MacBook running with the lid closed, for one long job. Mac.</p></div>
                 <span class="arrow" aria-hidden="true">→</span>
               </a>
             </li>
             <li>
               <a class="tool" href="https://make-become.github.io/claude-switcher/">
-                <img src="assets/claude-switcher-icon.png" width="128" height="128" alt="" />
+                <img src="assets/claude-switcher-icon.png" width="128" height="128" alt="" loading="lazy" />
                 <div><h3>Claude Switcher</h3><p>Several Claude Desktop accounts side by side, one icon each. Mac and Windows.</p></div>
                 <span class="arrow" aria-hidden="true">→</span>
               </a>
@@ -258,13 +254,13 @@
     <footer class="end wrap">
       <p class="say"><span class="a">I don’t just make.</span> <span class="b">I make become.</span></p>
       <p class="since">Making things become since August 2023</p>
-      <nav class="links" aria-label="make become elsewhere">
-        <a href="https://make-become.github.io/">make-become.github.io <span>what I make</span></a>
-        <a href="https://www.anymatix.com/">anymatix.com <span>Anymatix</span></a>
-        <a href="https://vincenzoml.github.io">vincenzoml.github.io <span>research</span></a>
-      </nav>
-      <div class="small">
-        <span><a href="mailto:vincenzoml@gmail.com">vincenzoml@gmail.com</a> · <a href="https://github.com/make-become">github.com/make-become</a></span>
+      <div class="foot">
+        <nav aria-label="make become elsewhere">
+          <a href="https://www.anymatix.com/">anymatix.com</a>
+          <a href="https://vincenzoml.github.io">vincenzoml.github.io</a>
+          <a href="https://github.com/make-become">github.com/make-become</a>
+          <a href="mailto:vincenzoml@gmail.com">write to me</a>
+        </nav>
         <span class="profiles">
           <a href="https://scholar.google.com/citations?user=MxkeE_AAAAAJ" aria-label="Google Scholar" title="Google Scholar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
           <a href="https://dblp.org/pid/50/1930.html" aria-label="dblp" title="dblp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.075.002c-.096.013-.154.092-.094.31L4.97 7.73 3.1 8.6s-.56.26-.4.85l2.45 9.159s.16.59.72.33l6.169-2.869 1.3-.61s.52-.24.42-.79l-.01-.06-1.13-4.22-.658-2.45-.672-2.49v-.04s-.16-.59-.84-1L3.5.141s-.265-.16-.425-.139zM18.324 5.03a.724.724 0 0 0-.193.06l-5.602 2.6.862 3.2 1.09 4.08.01.06c.05.47-.411.79-.411.79l-1.88.87.5 1.89.04.1c.07.17.28.6.81.91l6.95 4.269s.68.41.52-.17l-1.981-7.4 1.861-.86s.56-.26.4-.85L18.85 5.42s-.116-.452-.526-.39z"/></svg></a>

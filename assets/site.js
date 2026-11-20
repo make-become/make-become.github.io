@@ -196,7 +196,7 @@ async function work(frame) {
   if (!way) { off(); return; }
   const pg = program(gl, VS_FULL, FS_WORK), kOf = (p) => 0.45 * way.k * Math.pow(1 - p, 1.5);
   const draw = (t) => {
-    const [x, y, w, h] = geo.F, p = st.p, D = 0.45 * Math.pow(1 - p, 2) + 0.22 * st.pulse;
+    const [x, y, w, h] = geo.F, p = st.p, D = 0.45 * Math.pow(1 - p, 2) + 0.12 * st.pulse;
     const ia = src.width / src.height, fa = w / h, sx = ia > fa ? fa / ia : 1, sy = ia > fa ? 1 : ia / fa;
     gl.viewport(0, 0, geo.W, geo.H);
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
@@ -205,7 +205,7 @@ async function work(frame) {
     gl.uniform2f(pg.u.R, geo.W, geo.H);
     gl.uniform4f(pg.u.F, x, y, w, h);
     gl.uniform1f(pg.u.t, t);
-    gl.uniform1f(pg.u.k, kOf(p) + 0.25 * st.pulse);
+    gl.uniform1f(pg.u.k, kOf(p) + 0.15 * st.pulse);
     gl.uniform1f(pg.u.s, w / 1600);
     gl.uniform1f(pg.u.pr, p);
     gl.uniform1f(pg.u.base, 0);
@@ -264,21 +264,28 @@ async function hero(el) {
     W = cv.width = S.width = Math.round(r.width * d);
     H = cv.height = S.height = Math.round(r.height * d);
     const frac = clamp(0.84 - (r.width - 360) * 0.00034, 0.5, 0.84); // become's share of the width
-    F = Math.min(W * frac / 3.94, H * 0.26);
-    K = F / 100; s = F / 200;
-    X0 = W / 2 - 394 * K / 2; INKL = X0 + 6.9 * K; B = H / 2 + 0.36 * F; ASC = 0.72 * F; VY = B - ASC * 0.42;
-    const ROWS = 6, CELL = ASC / ROWS, SQ = CELL - 1.6 * K, COLS = 14;
-    M = F / 1.618; const Gp = 0.105 * M; MX = INKL + 13.6 * K + Gp - 0.0693 * M; MY = B - 0.54 * F - Gp;
-    // the pixel trail behind become, receding in depth
-    px = []; let cx = INKL - 3 * K;
-    for (let c = 0; c < COLS; c++) {
-      const sc = 1 - 0.058 * c; if (c > 0) cx -= CELL * (sc + (1 - 0.058 * (c - 1))) / 2;
-      for (let rr = 0; rr < ROWS; rr++) {
-        if (c > 0 && hh(c * 17 + rr * 5 + 3) > 1 - 0.062 * c) continue;
-        const ry = B - ASC + CELL * (rr + 0.5);
-        px.push({ x: cx, y: VY + (ry - VY) * sc, size: SQ * sc, c, o: Math.max(0.1, 1 - 0.07 * c), blur: c >= 7 ? (c - 6) * 0.35 * K : 0, delay: 0.4 + 0.55 * hh(c * 31 + rr * 7 + 11) + 0.015 * (COLS - c) });
+    const build = (shift) => {
+      K = F / 100; s = F / 200;
+      X0 = W / 2 - 394 * K / 2 + shift; INKL = X0 + 6.9 * K; B = H / 2 + 0.36 * F; ASC = 0.72 * F; VY = B - ASC * 0.42;
+      const ROWS = 6, CELL = ASC / ROWS, SQ = CELL - 1.6 * K, COLS = 14;
+      M = F / 1.618; const Gp = 0.105 * M; MX = INKL + 13.6 * K + Gp - 0.0693 * M; MY = B - 0.54 * F - Gp;
+      // the pixel trail behind become, receding in depth
+      px = []; let cx = INKL - 3 * K;
+      for (let c = 0; c < COLS; c++) {
+        const sc = 1 - 0.058 * c; if (c > 0) cx -= CELL * (sc + (1 - 0.058 * (c - 1))) / 2;
+        for (let rr = 0; rr < ROWS; rr++) {
+          if (c > 0 && hh(c * 17 + rr * 5 + 3) > 1 - 0.062 * c) continue;
+          const ry = B - ASC + CELL * (rr + 0.5);
+          px.push({ x: cx, y: VY + (ry - VY) * sc, size: SQ * sc, c, o: Math.max(0.1, 1 - 0.07 * c), blur: c >= 7 ? (c - 6) * 0.35 * K : 0, delay: 0.4 + 0.55 * hh(c * 31 + rr * 7 + 11) + 0.015 * (COLS - c) });
+        }
       }
-    }
+    };
+    // keep the whole lockup, trail included, inside the screen with its clear space (one x-height of become):
+    // on a phone the trail would otherwise leave by the left edge
+    F = Math.min(W * frac / 3.94, H * 0.26); build(0);
+    let XH = 0.54 * F, left = Math.min(...px.map((p) => p.x - p.size / 2)), right = X0 + 380 * K;
+    if (right - left + 2 * XH > W) { F *= W / (right - left + 2 * XH); build(0); XH = 0.54 * F; left = Math.min(...px.map((p) => p.x - p.size / 2)); }
+    if (left < XH) build(XH - left);
     // the word as a coarse mosaic: each cell becomes a flying pixel
     C12 = 12 * s;
     const word = (ctx, sc, ox, oy) => { ctx.font = `800 ${F * sc}px ${FONT}`; if ('letterSpacing' in ctx) ctx.letterSpacing = `${-3 * K * sc}px`; ctx.fillText('become', ox * sc, oy * sc); };
@@ -375,10 +382,7 @@ vec4 pic(vec2 q) {
   let resizeT = 0;
   new ResizeObserver(() => { clearTimeout(resizeT); resizeT = setTimeout(() => { layout(); uploaded = -1; wake(); }, 120); }).observe(el);
 
-  const replay = el.querySelector('.replay');
   const again = () => { t0 = performance.now() / 1000; uploaded = -1; wake(); };
-  replay.hidden = false;
-  replay.addEventListener('click', (ev) => { ev.stopPropagation(); again(); });
 
   // The gate: the page opens on the hero alone; activating it plays the way out and brings the content in.
   // The way out (the owner's pick): the picture is switched off like an old TV, and the content switches on.
