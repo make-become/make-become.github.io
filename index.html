@@ -102,13 +102,14 @@
       .lead { max-width: 60ch; margin: 20px 0 0; font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6; }
       .hang { margin: calc(var(--sec) * 0.6) 0 0; padding: 0; list-style: none; display: grid; gap: clamp(56px, 6vw, 88px); }
       .piece { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: center; }
-      .piece .banner { grid-column: 5 / 13; grid-row: 1 / 3; display: block; width: 100%; aspect-ratio: 16 / 7; border-radius: 18px; }
-      /* banner edges: the panel fades into the page instead of ending on a hard line */
-      .piece .banner { -webkit-mask-image: radial-gradient(130% 150% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(130% 150% at 50% 50%, #000 62%, transparent 100%); }
+      .piece .banner { grid-column: 5 / 13; grid-row: 1 / 3; position: relative; aspect-ratio: 16 / 7; }
+      /* the canvas reaches 36 px past the banner on every side (read by assets/noise.js), for the grain's halo and the feathered edges */
+      .piece .banner canvas { position: absolute; inset: -36px; width: calc(100% + 72px); height: calc(100% + 72px); display: block; pointer-events: none; }
       .piece .name { grid-column: 1 / 5; grid-row: 1; align-self: end; margin: 0 0 20px; color: var(--become); font-size: clamp(40px, 5vw, 76px); font-weight: 800; line-height: 1; letter-spacing: -0.045em; text-box: trim-both cap alphabetic; }
       .piece .plate { grid-column: 1 / 5; grid-row: 2; align-self: start; }
       .piece:nth-child(even) .banner { grid-column: 1 / 9; }
       .piece:nth-child(even) .name, .piece:nth-child(even) .plate { grid-column: 9 / 13; }
+      .piece { cursor: pointer; }
       .piece .name a { text-decoration: none; }
       .piece .name a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
       .piece .name a:focus-visible { outline: none; }
@@ -116,12 +117,14 @@
       .plate p { max-width: 44ch; margin: 0; font-size: 16px; line-height: 1.55; }
       .plate p:first-child { text-box: trim-start cap alphabetic; }
       .plate .with { margin-top: 10px; color: var(--make); font-size: 13.5px; }
-      /* while the page scrolls, banners and their text drift a little apart, each piece by where it is on screen (--f) */
-      .piece .banner { transform: translate3d(0, calc(var(--f, 0) * -90px), 0); will-change: transform; }
-      .piece .name, .piece .plate { transform: translate3d(0, calc(var(--f, 0) * 60px), 0); will-change: transform; }
+      /* the pieces float: banners and their text drift apart as the page scrolls (--f, where the piece is on screen),
+         and bob gently, out of step with each other, while the page is still (--b) */
+      .piece .banner { transform: translate3d(0, calc(var(--f, 0) * -90px + var(--b, 0) * 9px), 0); will-change: transform; }
+      .piece .name, .piece .plate { transform: translate3d(0, calc(var(--f, 0) * 60px - var(--b, 0) * 6px), 0); will-change: transform; }
       @media (max-width: 760px) {
         .piece { display: flex; flex-direction: column; align-items: stretch; }
         .piece .banner { aspect-ratio: 2 / 1; margin-bottom: 22px; }
+        .piece .banner canvas { inset: -14px; width: calc(100% + 28px); height: calc(100% + 28px); }
         .piece .name { font-size: clamp(40px, 12vw, 60px); margin-bottom: 16px; align-self: auto; }
         .piece .plate { align-self: auto; }
       }
@@ -149,6 +152,9 @@
       .profiles { display: flex; gap: 4px; }
       .profiles a { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; }
       .profiles svg { display: block; width: 17px; height: 17px; fill: currentColor; }
+      /* leaving through a piece (assets/exit.js): a shockwave from the click turns the page into grain */
+      .exit-veil { position: fixed; inset: 0; z-index: 100; width: 100vw; height: 100vh; pointer-events: none; }
+      .exiting .end { opacity: 0; transition: opacity 0.4s ease-out; }
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
         .cue { display: none; }
@@ -180,7 +186,7 @@
         <p class="lead">I build software that makes hard things usable: generative image and video for people who are not engineers, formal methods for code written with AI, logic that reads medical images. Some of it comes out of my research at CNR, some of it I make and run myself. I have been writing software for over forty years; these are the projects I am working on now.</p>
         <ul class="hang">
           <li class="piece">
-            <canvas class="banner" data-banner data-fx="diffuse" data-logo="assets/logos/anymatix.png" data-visual="assets/tiles/anymatix.webp" aria-hidden="true"></canvas>
+            <div class="banner"><canvas data-banner data-fx="diffuse" data-logo="assets/logos/anymatix.png" data-visual="assets/tiles/anymatix.webp" aria-hidden="true"></canvas></div>
             <h3 class="name"><a href="https://www.anymatix.com/">Anymatix</a></h3>
             <div class="plate">
               <p>Generative image and video, built from cards you link, group and reuse. Free.</p>
@@ -188,7 +194,7 @@
             </div>
           </li>
           <li class="piece">
-            <canvas class="banner" data-banner data-fx="scan" data-visual="assets/tiles/naima-home.webp" aria-hidden="true"></canvas>
+            <div class="banner"><canvas data-banner data-fx="scan" data-visual="assets/tiles/naima-home.webp" aria-hidden="true"></canvas></div>
             <h3 class="name"><a href="https://naima-project.github.io/naima/">NAIMA</a></h3>
             <div class="plate">
               <p>Software built by AI agents, kept honest: every change planned, tested and proven, with the record in the repository.</p>
@@ -196,7 +202,7 @@
             </div>
           </li>
           <li class="piece">
-            <canvas class="banner" data-banner data-fx="grow" data-visual="assets/tiles/voxlogica2-logic.webp" data-fit="contain" aria-hidden="true"></canvas>
+            <div class="banner"><canvas data-banner data-fx="grow" data-visual="assets/tiles/voxlogica2-logic.webp" data-fit="contain" aria-hidden="true"></canvas></div>
             <h3 class="name"><a href="https://voxlogica.org/#voxlogica2">VoxLogicA&nbsp;2</a></h3>
             <div class="plate">
               <p>Spatial model checking for medical images: logic and neural networks in one plan a doctor can audit.</p>
@@ -204,7 +210,7 @@
             </div>
           </li>
           <li class="piece">
-            <canvas class="banner" data-banner data-fx="ripple" data-logo="assets/logos/learn-with-love.png" data-visual="assets/learn-with-love.jpg" aria-hidden="true"></canvas>
+            <div class="banner"><canvas data-banner data-fx="ripple" data-logo="assets/logos/learn-with-love.png" data-visual="assets/learn-with-love.jpg" aria-hidden="true"></canvas></div>
             <h3 class="name"><a href="https://learn-with-love.github.io/">Learn With Love</a></h3>
             <div class="plate">
               <p>Small learning games for children, with a unicorn for a friend. Free, no ads.</p>
@@ -260,31 +266,32 @@
 
     <script type="module" src="assets/site.js"></script>
     <script type="module" src="assets/noise.js"></script>
+    <script type="module" src="assets/exit.js"></script>
     <script type="module">
       // the top bar stays on screen while scrolling, smaller once it has stuck
       const bar = document.querySelector('.bar');
       const stuck = () => bar.classList.toggle('stuck', bar.offsetHeight > 0 && bar.getBoundingClientRect().top <= 0 && scrollY > 0);
       addEventListener('scroll', stuck, { passive: true }); stuck();
-      // the pieces float: each gets --f, its distance from the middle of the screen (-1 to 1), reached with a little lag
+      // the pieces float: --f follows where each piece is on screen (-1 to 1) with a little lag; --b is a slow bob,
+      // a different phase for each piece, so the page moves gently even when nobody scrolls
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const pieces = [...document.querySelectorAll('.piece')].map((el) => ({ el, f: 0, to: 0 }));
-        let busy = 0;
-        const aim = () => {
+        const pieces = [...document.querySelectorAll('.piece')].map((el, k) => ({ el, f: 0, phase: k * 1.9, amp: 1, held: false }));
+        // under the pointer a piece settles and holds still, so it can be read
+        for (const p of pieces) { p.el.addEventListener('pointerenter', () => { p.held = true; }); p.el.addEventListener('pointerleave', () => { p.held = false; }); }
+        const step = (now) => {
           const h = innerHeight;
-          for (const p of pieces) { const r = p.el.getBoundingClientRect(); p.to = r.height ? Math.max(-1, Math.min(1, (r.top + r.height / 2 - h / 2) / h)) : 0; }
-        };
-        const step = () => {
-          busy = 0; aim();
-          let moving = false;
           for (const p of pieces) {
-            p.f += (p.to - p.f) * 0.1;
-            if (Math.abs(p.to - p.f) > 0.001) moving = true; else p.f = p.to;
+            const r = p.el.getBoundingClientRect();
+            if (r.bottom < -h * 0.5 || r.top > h * 1.5 || !r.height) continue;
+            const to = Math.max(-1, Math.min(1, (r.top + r.height / 2 - h / 2) / h));
+            if (!p.held) p.f += (to - p.f) * 0.08;
+            p.amp += ((p.held ? 0 : 1) - p.amp) * 0.08;
             p.el.style.setProperty('--f', p.f.toFixed(4));
+            p.el.style.setProperty('--b', (p.amp * Math.sin(now / 1100 + p.phase)).toFixed(4));
           }
-          if (moving) busy = requestAnimationFrame(step);
+          requestAnimationFrame(step);
         };
-        const go = () => { if (!busy) busy = requestAnimationFrame(step); };
-        addEventListener('scroll', go, { passive: true }); addEventListener('resize', go); go();
+        requestAnimationFrame(step);
       }
     </script>
   </body>

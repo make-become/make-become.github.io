@@ -466,7 +466,8 @@ vec4 pic(vec2 q) {
       if (!el.classList.contains('on')) {
         el.classList.add('on');
         // close the gate only when the hero really runs, the page is at its top and no section was asked for
-        if (!location.hash && window.scrollY < 10) { html.classList.add('gate'); el.querySelector('.enter').hidden = false; }
+        // and not when coming back to the content (back from a project opened from it)
+        if (!location.hash && window.scrollY < 10 && !history.state?.back) { html.classList.add('gate'); el.querySelector('.enter').hidden = false; }
       }
     },
   };

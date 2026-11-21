@@ -1,14 +1,17 @@
 // The work, as banners that come out of noise: each piece's banner (its logo, where it has one, and a real picture of it)
-// starts as one-bit noise when it first comes into view and resolves into the banner fast, cell by cell, left first.
-// Red and blue are the TV split, a few of the noise pixels. Once resolved the banner stays still and clean;
-// hovering stirs a little noise back for a moment. Reduced motion draws the banner alone.
+// starts under fine film grain when it first comes into view and resolves into the banner, each in its own way (data-fx).
+// The grain is fine and soft, and spills a little past the banner's edges as a halo; the edges of the banner itself are feathered.
+// Red and blue are the TV split: a glowing fringe on the front of the reveal. Once resolved, a faint grain keeps moving on the
+// banner while it is on screen; under the pointer the banner holds still and clean. Reduced motion draws the banner alone.
 
-const CELL = 4; // css pixels per noise cell
-const GROUND = '#15181c', NOISE = ['#eef1f4', '#eef1f4', '#7d8590', '#7d8590', '#ff3b3b', '#4d8dff'];
-const RESOLVE = 900, STIR = 380; // ms
+const MASK = 6; // css px per cell of the reveal mask; drawn smoothed, so its edges are soft
+const GROUND = [21, 24, 28];
+const RESOLVE = 1100; // ms
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const load = (src) => new Promise((ok) => { if (!src) return ok(null); const i = new Image(); i.decoding = 'async'; i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+const canvas2d = (w, h) => { const c = document.createElement('canvas'); c.width = Math.max(1, w); c.height = Math.max(1, h); return [c, c.getContext('2d')]; };
+const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 // Fit an image into a box: cover crops, contain letterboxes. Returns the draw rectangle.
 const fit = (img, x, y, w, h, mode) => {
@@ -20,9 +23,8 @@ const fit = (img, x, y, w, h, mode) => {
 
 // The picture's own ground, read from its corner, so the banner is one seamless panel.
 const corner = (img) => {
-  if (!img) return [21, 24, 28];
-  const c = document.createElement('canvas'); c.width = c.height = 1;
-  const x = c.getContext('2d'); x.drawImage(img, 0, 0, 4, 4, 0, 0, 1, 1);
+  if (!img) return GROUND;
+  const [, x] = canvas2d(1, 1); x.drawImage(img, 0, 0, 4, 4, 0, 0, 1, 1);
   return [...x.getImageData(0, 0, 1, 1).data.slice(0, 3)];
 };
 
@@ -50,118 +52,140 @@ function compose(cx, W, H, logo, visual, mode) {
   }
 }
 
+// A soft-edged rounded rectangle as an alpha mask: drawn through a shadow, which every browser blurs.
+function softRect(W, H, x, y, w, h, radius, blur) {
+  const [c, m] = canvas2d(W, H), off = W + 4 * blur;
+  m.shadowColor = '#000'; m.shadowBlur = blur; m.shadowOffsetX = off;
+  m.beginPath(); m.roundRect(x - off, y, w, h, radius); m.fill();
+  return c;
+}
+
+// Film grain: a few tiles of fine random greys, drawn at a random offset each frame.
+const GRAIN = Array.from({ length: 4 }, () => {
+  const [c, x] = canvas2d(256, 256), im = x.createImageData(256, 256);
+  for (let q = 0; q < im.data.length; q += 4) { const v = Math.random(); const g = 40 + v * 215; im.data[q] = im.data[q + 1] = im.data[q + 2] = g; im.data[q + 3] = 255 * (0.35 + 0.65 * v); }
+  x.putImageData(im, 0, 0);
+  return c;
+});
+
 async function banner(canvas) {
   const [logo, visual] = await Promise.all([load(canvas.dataset.logo), load(canvas.dataset.visual)]);
   const mode = canvas.dataset.fit || 'cover', fx = canvas.dataset.fx || 'scatter';
   const cx = canvas.getContext('2d');
-  const art = document.createElement('canvas'), ax = art.getContext('2d');
-  let W = 0, H = 0, cols = 0, rows = 0, due = null, t0 = -1, stir = -1, raf = 0;
+  let W = 0, H = 0, B = 0, d = 1, art, halo, layer, lx, mask, mx, edge, ex, cols = 0, rows = 0, due = null;
+  let t0 = -1, held = false, raf = 0, last = 0;
 
   const size = () => {
-    const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
-    W = canvas.width = art.width = Math.max(1, Math.round(r.width * d));
-    H = canvas.height = art.height = Math.max(1, Math.round(r.height * d));
-    compose(ax, W, H, logo, visual, mode);
-    const c = CELL * d; cols = Math.ceil(W / c); rows = Math.ceil(H / c);
-    // when each cell resolves, 0 to 1, by the banner's own way (data-fx)
+    const r = canvas.getBoundingClientRect();
+    d = Math.min(2, devicePixelRatio || 1);
+    W = canvas.width = Math.max(1, Math.round(r.width * d)); H = canvas.height = Math.max(1, Math.round(r.height * d));
+    // how far the canvas reaches past the banner on each side (set in the page's CSS), for the halo
+    const pr = canvas.parentElement.getBoundingClientRect();
+    B = Math.max(0, (r.width - pr.width) / 2) * d;
+    const iw = Math.max(1, W - 2 * B), ih = Math.max(1, H - 2 * B);
+    // the banner, feathered at its edges, inside the canvas
+    const [pc, px] = canvas2d(iw, ih); compose(px, iw, ih, logo, visual, mode);
+    let ax; [art, ax] = canvas2d(W, H);
+    ax.drawImage(pc, B, B);
+    ax.globalCompositeOperation = 'destination-in';
+    ax.drawImage(softRect(W, H, B, B, iw, ih, 18 * d, 10 * d), 0, 0);
+    // where grain may lie: the banner and a short halo around it
+    halo = softRect(W, H, B * 0.45, B * 0.45, W - 0.9 * B, H - 0.9 * B, 28 * d, B * 0.9);
+    [layer, lx] = canvas2d(W, H);
+    cols = Math.ceil(W / (MASK * d)); rows = Math.ceil(H / (MASK * d));
+    [mask, mx] = canvas2d(cols, rows); [edge, ex] = canvas2d(cols, rows);
+    // when each cell resolves, 0 to 1, by the banner's own way
     due = new Float32Array(cols * rows);
-    const seeds = [[0.72, 0.4], [0.86, 0.68], [0.2, 0.5]]; // where regions start growing, as fractions of the banner
+    const seeds = [[0.72, 0.4], [0.86, 0.68], [0.2, 0.5]];
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
       const u = i / cols, v = j / rows, rnd = Math.random();
-      due[j * cols + i] = fx === 'scan' ? 0.82 * v + 0.12 * rnd // line by line, top to bottom
-        : fx === 'grow' ? Math.min(...seeds.map(([a, b]) => Math.hypot((u - a) * W / H, v - b))) / 1.4 + 0.015 * rnd // regions growing from seeds
-        : fx === 'ripple' ? Math.hypot((u - 0.5) * W / H, v - 0.5) / 1.3 + 0.08 * rnd // rings from the centre
-        : 0.05 + 0.6 * rnd + 0.35 * u; // scattered, a little left first
+      due[j * cols + i] = fx === 'scan' ? v // a wipe from the top, under a beam
+        : fx === 'grow' ? Math.min(...seeds.map(([a, b]) => Math.hypot((u - a) * W / H, v - b))) / 1.3 + 0.02 * rnd // regions growing from seeds
+        : fx === 'ripple' ? Math.hypot((u - 0.5) * W / H, v - 0.5) / 1.3 + 0.06 * rnd // rings from the centre
+        : fx === 'diffuse' ? 0.5 // all at once: the grain thins out everywhere together
+        : 0.05 + 0.6 * rnd + 0.35 * u;
     }
-    if (t0 >= 0 || reduced) cx.drawImage(art, 0, 0); else draw(0);
+    paint(t0 >= 0 || reduced ? 1 : 0, 0);
   };
-  // p: how far the resolve has come, 0 to 1. Each banner has its own way (data-fx); the hover stir is shared.
-  const cellAt = (n, c) => [(n % cols) * c, Math.floor(n / cols) * c];
-  const draw = (p, only = 1) => {
-    cx.drawImage(art, 0, 0);
-    const c = W / cols;
-    if (only < 1) { // the hover stir: a few cells of noise, everywhere
-      for (let n = 0; n < due.length; n++) if (Math.random() < only) { const [x, y] = cellAt(n, c); cx.fillStyle = NOISE[(Math.random() * NOISE.length) | 0]; cx.fillRect(x, y, Math.ceil(c), Math.ceil(c)); }
-      return;
-    }
-    (WAYS[fx] || WAYS.scatter)(p, c);
-  };
-  const WAYS = {
-    // cell by cell, at random, a little left first
-    scatter: (p, c) => {
-      for (let n = 0; n < due.length; n++) {
-        if (due[n] <= p) continue;
-        const [x, y] = cellAt(n, c);
-        cx.fillStyle = Math.random() < 0.5 ? GROUND : NOISE[(Math.random() * NOISE.length) | 0];
-        cx.fillRect(x, y, Math.ceil(c), Math.ceil(c));
-      }
-    },
-    // Anymatix: the whole picture under television static that thins out, the way a diffusion model removes noise
-    diffuse: (p, c) => {
-      const a = Math.pow(1 - p, 1.6);
-      if (a < 0.01) return;
-      cx.globalAlpha = a;
-      cx.fillStyle = GROUND; cx.fillRect(0, 0, W, H);
-      for (let n = 0; n < due.length; n++) {
-        const v = Math.random();
-        if (v < 0.35) continue;
-        const [x, y] = cellAt(n, c);
-        cx.fillStyle = v > 0.97 ? '#ff3b3b' : v > 0.94 ? '#4d8dff' : `rgb(${(v - 0.35) * 380 | 0}, ${(v - 0.35) * 385 | 0}, ${(v - 0.35) * 392 | 0})`;
-        cx.fillRect(x, y, Math.ceil(c), Math.ceil(c));
-      }
-      cx.globalAlpha = 1;
-    },
-    // NAIMA: printed line by line under a bright beam, the lines just printed still shaking sideways
-    scan: (p, c) => {
-      const yb = Math.round(p * 1.08 * H);
-      if (yb >= H + 8) return;
-      cx.fillStyle = GROUND; cx.fillRect(0, yb, W, H - yb);
-      cx.fillStyle = 'rgba(238, 241, 244, 0.07)';
-      for (let y = yb + 3; y < H; y += 6) cx.fillRect(0, y, W, 1);
-      for (let k = 0; k < 6; k++) { // the fresh lines, shifted
-        const y = yb - (k + 1) * c * 2, h = c * 2, dx = (Math.random() - 0.5) * c * 6 * (6 - k) / 6;
-        if (y < 0) break;
-        cx.drawImage(art, 0, y, W, h, dx, y, W, h);
-      }
-      cx.fillStyle = '#ff3b3b'; cx.fillRect(0, yb - 2, W, 2);
-      cx.fillStyle = '#4d8dff'; cx.fillRect(0, yb + 2, W, 2);
-      cx.fillStyle = '#eef1f4'; cx.fillRect(0, yb, W, 2);
-    },
-    // VoxLogicA: regions grow from seeds over a dark field of sparse dots, their growing edge split red and blue
-    grow: (p, c) => {
-      for (let n = 0; n < due.length; n++) {
-        const d = due[n] - p;
-        if (d <= 0) continue;
-        const [x, y] = cellAt(n, c);
-        cx.fillStyle = d < 0.025 ? (Math.random() < 0.5 ? '#ff3b3b' : '#4d8dff') : d < 0.045 ? '#eef1f4' : Math.random() < 0.08 ? '#7d8590' : GROUND;
-        cx.fillRect(x, y, Math.ceil(c), Math.ceil(c));
-      }
-    },
-  };
-  WAYS.ripple = WAYS.scatter; // Learn With Love: the same cells, in rings from the centre (its due order)
 
+  // the mask of what is still unresolved, and the band at the front of the reveal, at cell resolution
+  const masks = (p) => {
+    const mi = mx.createImageData(cols, rows), ei = ex.createImageData(cols, rows), soft = fx === 'scan' ? 0.06 : 0.14;
+    for (let n = 0, q = 3; n < due.length; n++, q += 4) {
+      const k = fx === 'diffuse' ? Math.pow(1 - p, 1.4) : smooth(0, soft, due[n] - p * (1 + soft));
+      mi.data[q] = 255 * k;
+      ei.data[q] = fx === 'diffuse' ? 0 : 255 * Math.max(0, 1 - Math.abs(due[n] - p * (1 + soft)) / 0.035);
+    }
+    mx.putImageData(mi, 0, 0); ex.putImageData(ei, 0, 0);
+  };
+  const grain = (ctx, alpha) => {
+    const t = GRAIN[(Math.random() * GRAIN.length) | 0], s = d >= 2 ? 1.5 : 1;
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.setTransform(s, 0, 0, s, -Math.random() * 256, -Math.random() * 256);
+    ctx.fillStyle = ctx.createPattern(t, 'repeat'); ctx.fillRect(0, 0, (W + 512) / s, (H + 512) / s);
+    ctx.restore();
+  };
+  // p: how far the reveal has come, 0 to 1; still: no living grain (the banner under the pointer)
+  const paint = (p, still = false) => {
+    cx.clearRect(0, 0, W, H);
+    cx.drawImage(art, 0, 0);
+    if (p < 1) {
+      masks(p);
+      // the unresolved part: ground, then grain, inside the halo
+      lx.globalCompositeOperation = 'source-over'; lx.clearRect(0, 0, W, H);
+      lx.fillStyle = `rgb(${GROUND})`; lx.fillRect(0, 0, W, H);
+      grain(lx, 0.9);
+      lx.globalCompositeOperation = 'destination-in'; lx.imageSmoothingEnabled = true; lx.drawImage(mask, 0, 0, W, H);
+      lx.drawImage(halo, 0, 0);
+      cx.drawImage(layer, 0, 0);
+      // the front of the reveal glows, split red and blue
+      if (fx !== 'diffuse') {
+        const o = 3 * d;
+        for (const [col, dx] of [['#ff3b3b', -o], ['#4d8dff', o], ['#eef1f4', 0]]) {
+          lx.globalCompositeOperation = 'source-over'; lx.clearRect(0, 0, W, H);
+          lx.drawImage(edge, 0, 0, W, H);
+          lx.globalCompositeOperation = 'source-in'; lx.fillStyle = col; lx.fillRect(0, 0, W, H);
+          lx.globalCompositeOperation = 'destination-in'; lx.drawImage(halo, 0, 0);
+          cx.save(); cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = col === '#eef1f4' ? 0.35 : 0.8;
+          cx.shadowColor = col; cx.shadowBlur = 14 * d; cx.drawImage(layer, dx, 0); cx.restore();
+        }
+      }
+      if (fx === 'scan') { // the beam
+        const y = Math.min(H, p * (1 + 0.06) * H);
+        cx.save(); cx.globalCompositeOperation = 'lighter'; cx.shadowBlur = 18 * d;
+        for (const [col, dy] of [['#ff3b3b', -2 * d], ['#4d8dff', 2 * d], ['#eef1f4', 0]]) { cx.shadowColor = col; cx.fillStyle = col; cx.globalAlpha = 0.5; cx.fillRect(B * 0.4, y + dy, W - 0.8 * B, 1.5 * d); }
+        cx.restore();
+      }
+    }
+    // the living grain: faint on the banner while it is on screen; none while the pointer rests on it
+    if (!still) { cx.save(); cx.globalCompositeOperation = 'source-atop'; grain(cx, 0.06); cx.restore(); }
+  };
+
+  const onScreen = () => { const r = canvas.getBoundingClientRect(); return r.height > 0 && r.bottom > 0 && r.top < innerHeight; };
   const frame = (now) => {
     raf = 0;
     if (t0 < 0) t0 = now;
     const p = Math.min(1, (now - t0) / RESOLVE);
-    if (p < 1) { draw(1 - Math.pow(1 - p, 2)); raf = requestAnimationFrame(frame); return; }
-    if (stir >= 0 && now - stir < STIR) { draw(1, 0.16 * (1 - (now - stir) / STIR)); raf = requestAnimationFrame(frame); return; }
-    stir = -1; cx.drawImage(art, 0, 0);
+    if (p >= 1 && held) { paint(1, true); return; } // the pointer rests on it: clean and still until it leaves
+    if (p < 1 || now - last > 80) { paint(p < 1 ? 1 - Math.pow(1 - p, 2.2) : 1); last = now; } // grain at about 12 frames a second when settled
+    if (p < 1 || onScreen()) raf = requestAnimationFrame(frame);
   };
-  const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  const wake = () => { if (!raf && !reduced) raf = requestAnimationFrame(frame); };
 
-  // starts once a good part of the banner is on screen; checked on scroll and on layout, since the page may open hidden
+  // starts once the banner is on screen; checked on scroll and on layout, since the page may open hidden
   const check = () => {
-    if (t0 >= 0 || raf) return;
+    if (raf) return;
     const r = canvas.getBoundingClientRect();
-    if (r.height > 0 && r.top < innerHeight * 0.92 && r.bottom > innerHeight * 0.08) { removeEventListener('scroll', check); wake(); }
+    if (r.height > 0 && r.top < innerHeight * 0.92 && r.bottom > innerHeight * 0.08) wake();
   };
   size();
   new ResizeObserver(() => { size(); if (!reduced) check(); }).observe(canvas);
   if (reduced) return;
   addEventListener('scroll', check, { passive: true });
   check();
-  (canvas.closest('.piece') || canvas).addEventListener('pointerenter', () => { if (t0 >= 0 && !raf) { stir = performance.now(); wake(); } });
+  const piece = canvas.closest('.piece') || canvas;
+  piece.addEventListener('pointerenter', () => { held = true; wake(); });
+  piece.addEventListener('pointerleave', () => { held = false; wake(); });
 }
 
 document.querySelectorAll('canvas[data-banner]').forEach(banner);
