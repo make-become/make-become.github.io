@@ -127,7 +127,8 @@
       .piece { --drift-banner: -90px; --drift-text: 60px; --bob-banner: 9px; --bob-text: -6px; }
       .piece .banner { transform: translate3d(0, calc(var(--f, 0) * var(--drift-banner) + var(--b, 0) * var(--bob-banner)), 0); will-change: transform; }
       .piece .name, .piece .plate { transform: translate3d(0, calc(var(--f, 0) * var(--drift-text) + var(--b, 0) * var(--bob-text)), 0); will-change: transform; }
-      @media (max-width: 760px) {
+      /* phones, upright or turned on their side: the banner on top, the name and text below it */
+      @media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
         .piece { display: flex; flex-direction: column; align-items: stretch; }
         /* stacked, the banner and its text move together, and only a little, so they never overlap */
         .piece { --drift-banner: -12px; --drift-text: -12px; --bob-banner: 4px; --bob-text: 4px; }
@@ -286,8 +287,8 @@
       </div>
     </footer>
 
-    <script type="module" src="assets/site.js?v=2026-11-21"></script>
-    <script type="module" src="assets/noise.js?v=2026-11-21"></script>
+    <script type="module" src="assets/site.js?v=2026-11-21b"></script>
+    <script type="module" src="assets/noise.js?v=2026-11-21b"></script>
     <script type="module" src="assets/exit.js?v=2026-11-21"></script>
     <script type="module">
       // the top bar stays on screen while scrolling, smaller once it has stuck

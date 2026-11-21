@@ -105,7 +105,8 @@ async function banner(canvas) {
         : fx === 'diffuse' ? 0.5 // all at once: the grain thins out everywhere together
         : 0.05 + 0.6 * rnd + 0.35 * u;
     }
-    paint(t0 >= 0 || reduced ? 1 : 0, 0);
+    // before its reveal the banner is not drawn at all: no frozen grain waiting on screen
+    if (t0 >= 0 || reduced) paint(1); else cx.clearRect(0, 0, W, H);
   };
 
   // the mask of what is still unresolved, and the band at the front of the reveal, at cell resolution
@@ -172,20 +173,30 @@ async function banner(canvas) {
   };
   const wake = () => { if (!raf && !reduced) raf = requestAnimationFrame(frame); };
 
-  // starts once the banner is on screen; checked on scroll and on layout, since the page may open hidden
-  const check = () => {
-    if (raf) return;
+  // starts a moment after the banner is well in view and the page is showing (not behind the opening, not mid switch-on);
+  // checked on scroll, on layout and when the page's state changes, and called off if it scrolls away before then
+  const WAIT = 380; // ms
+  let pending = 0;
+  const ready = () => {
+    const c = document.documentElement.classList;
+    if (c.contains('gate') || (c.contains('leaving') && !c.contains('shown'))) return false;
     const r = canvas.getBoundingClientRect();
-    if (r.height > 0 && r.top < innerHeight * 0.92 && r.bottom > innerHeight * 0.08) wake();
+    return r.height > 0 && r.top < innerHeight * 0.8 && r.bottom > innerHeight * 0.2;
+  };
+  const check = () => {
+    if (raf || t0 >= 0) return;
+    if (!ready()) { clearTimeout(pending); pending = 0; return; }
+    if (!pending) pending = setTimeout(() => { pending = 0; if (ready()) wake(); else check(); }, WAIT);
   };
   size();
   new ResizeObserver(() => { size(); if (!reduced) check(); }).observe(canvas);
   if (reduced) return;
   addEventListener('scroll', check, { passive: true });
+  new MutationObserver(check).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   check();
   const piece = canvas.closest('.piece') || canvas;
-  piece.addEventListener('pointerenter', () => { held = true; wake(); });
-  piece.addEventListener('pointerleave', () => { held = false; wake(); });
+  piece.addEventListener('pointerenter', () => { held = true; if (t0 >= 0) wake(); });
+  piece.addEventListener('pointerleave', () => { held = false; if (t0 >= 0) wake(); });
 }
 
 document.querySelectorAll('canvas[data-banner]').forEach(banner);
