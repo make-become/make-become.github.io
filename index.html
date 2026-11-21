@@ -55,11 +55,12 @@
 
       /* One spacing scale: a section gap between blocks, an inner gap inside them. */
       :root { --sec: clamp(72px, 9vw, 128px); --in: 24px; }
-      /* One label style for section names and navigation. */
-      .label, .nav a, .bar-nav a { color: var(--make); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-decoration: none; transition: color 0.25s; }
+      /* Navigation: plain words, the size of the text. */
+      .nav a, .bar-nav a { color: var(--make); font-size: 16px; font-weight: 600; letter-spacing: -0.005em; text-decoration: none; transition: color 0.25s; }
       .nav a:hover, .nav a:focus-visible, .bar-nav a:hover, .bar-nav a:focus-visible { color: var(--become); }
-      .label { margin: 0 0 var(--in); }
-      .label + .intro { margin: calc(6px - var(--in)) 0 var(--in); font-size: 14.5px; line-height: 1.5; }
+      /* Section headings: in the type scale, sentence case. */
+      .head { margin: 0; color: var(--become); font-size: clamp(32px, 3.4vw, 48px); font-weight: 800; line-height: 1.05; letter-spacing: -0.035em; }
+      .head.small { font-size: clamp(24px, 2.2vw, 30px); letter-spacing: -0.025em; margin-bottom: var(--in); }
 
       /* Hero: the outro, drawn live (assets/site.js). */
       .hero { position: relative; height: 100vh; height: 100svh; min-height: 480px; overflow: hidden; }
@@ -86,76 +87,94 @@
       @keyframes switchon { 0% { transform: scale(1, 0.004); filter: brightness(6); } 60% { transform: scale(1, 1.01); filter: brightness(1.4); } 100% { transform: none; filter: none; } }
 
       /* The bar over the content: the mark (from the asset kit) goes back to the start. */
-      .bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; }
+      .bar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0;
+        background: var(--ground); box-shadow: 0 0 0 100vmax var(--ground); clip-path: inset(0 -100vmax); transition: padding 0.3s var(--ease); }
+      .bar.stuck { padding: 8px 0; box-shadow: 0 0 0 100vmax var(--ground), 0 1px 0 100vmax var(--line); clip-path: inset(0 -100vmax -1px); }
+      .bar.stuck .mark img { height: 48px; }
+      #work { scroll-margin-top: 80px; }
       .mark { display: block; margin-left: -10px; line-height: 0; }
-      .mark img { display: block; height: 44px; width: auto; }
+      .mark img { display: block; height: clamp(56px, 6vw, 84px); width: auto; transition: height 0.3s var(--ease); }
       .bar-nav { display: flex; gap: clamp(18px, 3vw, 36px); }
 
-      /* Who: as wide as three cards, one step above them. */
-      .intro { padding: calc(var(--sec) * 0.5) 0 0; }
-      .intro > * { max-width: min(100%, 954px); }
-      .lede { margin: 0; font-size: clamp(26px, 3.3vw, 44px); line-height: 1.12; letter-spacing: -0.028em; }
-      .lede .a { color: var(--make); font-weight: 600; }
-      .lede .b { color: var(--become); font-weight: 800; }
-      .research { margin: var(--in) 0 0; font-size: clamp(16px, 1.3vw, 18px); line-height: 1.7; }
-      .research a { color: var(--become); text-decoration: none; border-bottom: 1px solid var(--line); transition: border-color 0.25s; }
-      .research a:hover, .research a:focus-visible { border-color: var(--become); }
+      /* The work: each piece a banner that comes out of noise (assets/noise.js), its name, one line, what it is made with.
+         Three layouts on trial (html[data-layout], from ?layout=): a full-width banners with the text under them,
+         b shorter banners with the text beside them, alternating sides, c the logo, the text and a picture side by side. */
+      .work { margin-top: calc(var(--sec) * 0.6); }
+      .lead { max-width: 60ch; margin: 20px 0 0; font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6; }
+      .hang { margin: calc(var(--sec) * 0.6) 0 0; padding: 0; list-style: none; display: grid; gap: clamp(56px, 6vw, 88px); }
+      .piece { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: start; }
+      .piece canvas { display: block; width: 100%; border-radius: 18px; }
+      /* banner edges: the panel fades into the page instead of ending on a hard line */
+      .piece canvas { -webkit-mask-image: radial-gradient(130% 150% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(130% 150% at 50% 50%, #000 62%, transparent 100%); }
+      .piece .name { margin: 0; color: var(--become); font-size: clamp(40px, 5vw, 76px); font-weight: 800; line-height: 1; letter-spacing: -0.045em; text-box: trim-both cap alphabetic; }
+      .piece .name a { text-decoration: none; }
+      .piece .name a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+      .piece .name a:focus-visible { outline: none; }
+      .piece .name a:focus-visible::after { outline: 2px solid var(--blue); outline-offset: 6px; border-radius: 18px; }
+      .plate p { max-width: 44ch; margin: 0; font-size: 16px; line-height: 1.55; }
+      .plate p:first-child { text-box: trim-start cap alphabetic; }
+      .plate .with { margin-top: 10px; color: var(--make); font-size: 13.5px; }
+      .b-logo, .b-pic { display: none !important; }
+      /* while the page scrolls, banners and their text drift a little apart, each piece by where it is on screen (--f) */
+      .piece canvas { transform: translate3d(0, calc(var(--f, 0) * -90px), 0); will-change: transform; }
+      .piece .name, .piece .plate { transform: translate3d(0, calc(var(--f, 0) * 60px), 0); will-change: transform; }
 
-      /* The works: small cards, equal heights, fixed slots (picture, title, meta, three lines, address). */
-      .work { margin-top: var(--sec); }
-      .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 22px; margin: 0; padding: 0; list-style: none; }
-      .card { position: relative; display: flex; flex-direction: column; overflow: hidden; background: #191c21; border: 1px solid var(--line); border-radius: 12px; transition: border-color 0.3s, background 0.3s, transform 0.3s var(--ease); }
-      .card:hover, .card:focus-within { border-color: #3a4049; background: #1c2026; transform: translateY(-2px); }
-      .frame { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #111317; border-bottom: 1px solid var(--line); }
-      .frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
-      .frame canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: none; pointer-events: none; }
-      .frame.on canvas { display: block; }
-      .frame.on img, .js .frame[data-fx] img { visibility: hidden; } /* the canvas draws the picture; the plain one stays without JS, with reduced motion, or if WebGL fails */
-      .js.still .frame img, .js .frame.off img { visibility: visible; }
-      .body { display: flex; flex: 1; flex-direction: column; padding: 18px 18px 16px; }
-      .card h2 { margin: 0; color: var(--become); font-size: 19px; font-weight: 800; line-height: 1.2; letter-spacing: -0.015em; }
-      .card h2 a { text-decoration: none; }
-      .card h2 a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: 12px; }
-      .card h2 a:focus-visible { outline: none; }
-      .card h2 a:focus-visible::after { outline: 2px solid var(--blue); outline-offset: -2px; }
-      .meta { margin: 6px 0 0; color: var(--make); font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; }
-      .desc { margin: 12px 0 0; min-height: 4.5em; font-size: 14.5px; line-height: 1.5; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
-      .go { margin-top: auto; padding-top: 16px; color: var(--make); font-size: 13px; font-weight: 600; transition: color 0.25s; }
-      .card:hover .go, .card:focus-within .go { color: var(--become); }
-      /* Phone: a compact list, a small square picture on the left. */
-      @media (max-width: 560px) {
-        .cards { gap: 12px; }
-        .card { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: stretch; }
-        .card:hover, .card:focus-within { transform: none; }
-        .frame { aspect-ratio: 1; align-self: center; margin: 12px 0 12px 12px; border: 1px solid var(--line); border-radius: 8px; }
-        .body { padding: 12px 14px; }
-        .card h2 { font-size: 17px; }
-        .meta { margin-top: 2px; }
-        .desc { margin-top: 6px; min-height: 0; font-size: 13.5px; -webkit-line-clamp: 2; }
-        .go { display: none; }
+      /* a: banner across, the name and the text under it, their cap heights on one line */
+      .piece .b-wide { grid-column: 1 / -1; aspect-ratio: 18 / 5; margin-bottom: 28px; }
+      .piece .name { grid-column: 1 / 7; }
+      .piece .plate { grid-column: 7 / 13; }
+
+      /* b: a shorter banner on one side, the text beside it, centred on it; sides alternate */
+      [data-layout="b"] .piece { align-items: center; }
+      [data-layout="b"] .piece .b-wide { grid-column: 5 / 13; grid-row: 1 / 3; aspect-ratio: 16 / 7; margin: 0; }
+      [data-layout="b"] .piece .name { grid-column: 1 / 5; grid-row: 1; align-self: end; margin-bottom: 20px; }
+      [data-layout="b"] .piece .plate { grid-column: 1 / 5; grid-row: 2; align-self: start; }
+      [data-layout="b"] .piece:nth-child(even) .b-wide { grid-column: 1 / 9; }
+      [data-layout="b"] .piece:nth-child(even) .name, [data-layout="b"] .piece:nth-child(even) .plate { grid-column: 9 / 13; }
+
+      /* c: logo, text, picture: two banners with the text between them, centred */
+      [data-layout="c"] .b-wide { display: none; }
+      [data-layout="c"] .b-logo, [data-layout="c"] .b-pic { display: block !important; grid-row: 1 / 3; aspect-ratio: 1 / 1; }
+      [data-layout="c"] .b-pic { aspect-ratio: 16 / 10; }
+      [data-layout="c"] .piece { align-items: center; }
+      [data-layout="c"] .piece .b-logo { grid-column: 1 / 4; }
+      [data-layout="c"] .piece .b-pic { grid-column: 8 / 13; }
+      [data-layout="c"] .piece .name, [data-layout="c"] .piece .plate { grid-column: 4 / 8; text-align: center; padding: 0 12px; }
+      [data-layout="c"] .piece .name { grid-row: 1; align-self: end; margin-bottom: 20px; font-size: clamp(34px, 3.6vw, 56px); }
+      [data-layout="c"] .piece .plate { grid-row: 2; align-self: start; }
+      [data-layout="c"] .plate p { margin-inline: auto; }
+
+      @media (max-width: 760px) {
+        .piece, [data-layout] .piece { display: flex; flex-direction: column; align-items: stretch; }
+        .piece .b-wide { aspect-ratio: 2 / 1 !important; margin: 0 0 22px !important; display: block !important; }
+        [data-layout="c"] .b-logo, [data-layout="c"] .b-pic { display: none !important; }
+        .piece .name { font-size: clamp(40px, 12vw, 60px); margin: 0 0 16px !important; text-align: left !important; align-self: auto !important; }
+        .piece .plate { align-self: auto !important; }
+        .piece .plate { text-align: left !important; padding: 0 !important; }
       }
 
-      /* Small utilities: a quiet list. */
+      /* Small utilities: an app bar, icons in a row on one panel, each lifting under the pointer. */
       .tools { margin-top: var(--sec); }
-      .tools ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 0 40px; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-      .tool { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
-      .tool img { display: block; width: 40px; height: 40px; }
-      .tool h3 { margin: 0; color: var(--become); font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; }
-      .tool p { margin: 2px 0 0; font-size: 14px; line-height: 1.45; }
-      .tool .arrow { color: var(--make); transition: transform 0.3s var(--ease), color 0.3s; }
-      .tool:hover .arrow, .tool:focus-visible .arrow { transform: translateX(4px); color: var(--become); }
+      .tools ul { display: inline-flex; flex-wrap: wrap; gap: 8px; max-width: 100%; margin: 0; padding: 14px; list-style: none; background: #1b1e23; border: 1px solid var(--line); border-radius: 26px; }
+      .tool { display: flex; flex-direction: column; align-items: center; width: 168px; padding: 10px 8px 12px; border-radius: 16px; text-align: center; text-decoration: none; transition: background 0.25s; }
+      .tool img { display: block; width: 76px; height: 76px; transition: transform 0.35s var(--ease); }
+      .tool:hover, .tool:focus-visible { background: #22262c; }
+      .tool:hover img, .tool:focus-visible img { transform: translateY(-6px) scale(1.08); }
+      .tool h3 { margin: 8px 0 0; color: var(--become); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+      .tool p { margin: 3px 0 0; font-size: 13px; line-height: 1.4; }
+      @media (max-width: 560px) { .tools ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 10px; } .tool { width: auto; } .tool img { width: 60px; height: 60px; } .tool p { display: none; } }
 
-      /* The end: one closing block, the slogan, the date, then the footer line. */
+      /* The end: who, in one line, then the links. */
       .end { margin-top: var(--sec); padding-bottom: 40px; }
-      .say { margin: 0; font-size: clamp(26px, 3.3vw, 44px); line-height: 1.1; letter-spacing: -0.028em; }
-      .say .a { color: var(--make); font-weight: 600; }
-      .say .b { color: var(--become); font-weight: 800; }
-      .since { margin: 12px 0 0; color: var(--slogan); font-size: 15px; }
-      .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 28px; margin-top: calc(var(--in) * 2); padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; }
+      .who { margin: 0; font-size: 15px; }
+      .who a { color: var(--become); text-decoration: none; border-bottom: 1px solid var(--line); transition: border-color 0.25s; }
+      .who a:hover, .who a:focus-visible { border-color: var(--become); }
+      .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 28px; margin-top: var(--in); padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; }
       .foot nav { display: flex; flex-wrap: wrap; gap: 10px 28px; }
-      .foot a { color: var(--make); text-decoration: none; font-weight: 600; transition: color 0.25s; }
+      .foot a { display: inline-block; padding-block: 4px; color: var(--make); text-decoration: none; font-weight: 600; transition: color 0.25s; }
       .foot a:hover, .foot a:focus-visible { color: var(--become); }
-      .profiles { display: flex; gap: 16px; }
+      .profiles { display: flex; gap: 4px; }
+      .profiles a { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; }
       .profiles svg { display: block; width: 17px; height: 17px; fill: currentColor; }
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -182,70 +201,72 @@
         <a class="mark" href="#top"><img src="assets/brand/make-become-mark-dark-transparent-outlined.svg" width="634" height="231" alt="make become, back to the start" /></a>
         <nav class="bar-nav" aria-label="Sections"><a href="#work">work</a><a href="https://vincenzoml.github.io">research</a></nav>
       </div>
-      <section class="intro wrap" aria-label="About">
-        <p class="lede"><span class="a">I make things. Complex things.</span> <span class="b">And I make them become: beautiful, simple, useful.</span></p>
-        <p class="research">Researcher and AI architect. Maker of <a href="https://www.anymatix.com/">Anymatix</a> and <a href="https://naima-project.github.io/naima/">NAIMA</a>, co-creator of <a href="https://voxlogica.org/#voxlogica2">VoxLogicA</a>.<br />
-          Research at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a> of ISTI–CNR, Pisa: papers and teaching at <a href="https://vincenzoml.github.io">vincenzoml.github.io</a>.</p>
-      </section>
-
       <section class="work wrap" id="work" aria-label="Work">
         <!-- Hidden for now (Transient): images and copy are in assets/transient.jpg; add a card here to show it again. -->
-        <p class="label">work</p>
-        <p class="intro">Recent work. Forty years of software came before it.</p>
-        <ul class="cards">
-          <li class="card">
-            <div class="frame" data-fx="split"><img src="assets/tiles/anymatix.webp" width="800" height="500" alt="Three images made with Anymatix, shown as cards" /></div>
-            <div class="body">
-              <h2><a href="https://www.anymatix.com/">Anymatix</a></h2>
-              <p class="meta">Desktop app · free</p>
-              <p class="desc">Desktop app for generative image and video work: every step is a card you link, group and reuse.</p>
-              <span class="go" aria-hidden="true">anymatix.com</span>
+        <h2 class="head">Selected work</h2>
+        <p class="lead">I build software that makes hard things usable: generative image and video for people who are not engineers, formal methods for code written with AI, logic that reads medical images. Some of it comes out of my research at CNR, some of it I make and run myself. I have been writing software for over forty years; these are the projects I am working on now.</p>
+        <ul class="hang">
+          <li class="piece">
+            <canvas class="b-wide" data-banner data-fx="diffuse" data-logo="assets/logos/anymatix.png" data-visual="assets/tiles/anymatix.webp" aria-hidden="true"></canvas>
+            <canvas class="b-logo" data-banner data-logo="assets/logos/anymatix.png" aria-hidden="true"></canvas>
+            <canvas class="b-pic" data-banner data-visual="assets/tiles/anymatix.webp" aria-hidden="true"></canvas>
+            <h3 class="name"><a href="https://www.anymatix.com/">Anymatix</a></h3>
+            <div class="plate">
+              <p>Generative image and video, built from cards you link, group and reuse. Free.</p>
+              <p class="with">made with diffusion models, ComfyUI, Svelte, Python</p>
             </div>
           </li>
-          <li class="card">
-            <div class="frame" data-fx="rise"><img src="assets/tiles/naima.webp" width="800" height="500" alt="The NAIMA mark: We put the AI in your main." /></div>
-            <div class="body">
-              <h2><a href="https://naima-project.github.io/naima/">NAIMA</a></h2>
-              <p class="meta">Beta · with CNR</p>
-              <p class="desc">Planned, tested, proven: formal methods and software engineering for everyone who builds with AI.</p>
-              <span class="go" aria-hidden="true">naima-project.github.io/naima</span>
+          <li class="piece">
+            <canvas class="b-wide" data-banner data-fx="scan" data-visual="assets/tiles/naima-home.webp" aria-hidden="true"></canvas>
+            <canvas class="b-logo" data-banner data-logo="assets/logos/naima.svg" aria-hidden="true"></canvas>
+            <canvas class="b-pic" data-banner data-fx="scan" data-visual="assets/tiles/naima-home.webp" aria-hidden="true"></canvas>
+            <h3 class="name"><a href="https://naima-project.github.io/naima/">NAIMA</a></h3>
+            <div class="plate">
+              <p>Software built by AI agents, kept honest: every change planned, tested and proven, with the record in the repository.</p>
+              <p class="with">made with AI agents, formal models, TypeScript, Deno, git</p>
             </div>
           </li>
-          <li class="card">
-            <div class="frame" data-fx="lens"><img src="assets/tiles/voxlogica2.webp" width="800" height="500" alt="VoxLogicA 2 segmenting a brain scan, in three views and in 3D" /></div>
-            <div class="body">
-              <h2><a href="https://voxlogica.org/#voxlogica2">VoxLogicA&nbsp;2</a></h2>
-              <p class="meta">In development · with CNR</p>
-              <p class="desc">Spatial model checking for medical images, rebuilt for hybrid AI: logic and neural networks in one auditable plan.</p>
-              <span class="go" aria-hidden="true">voxlogica.org</span>
+          <li class="piece">
+            <canvas class="b-wide" data-banner data-fx="grow" data-visual="assets/tiles/voxlogica2-logic.webp" data-fit="contain" aria-hidden="true"></canvas>
+            <canvas class="b-logo" data-banner data-visual="assets/tiles/voxlogica2-left.webp" aria-hidden="true"></canvas>
+            <canvas class="b-pic" data-banner data-visual="assets/tiles/voxlogica2-right.webp" aria-hidden="true"></canvas>
+            <h3 class="name"><a href="https://voxlogica.org/#voxlogica2">VoxLogicA&nbsp;2</a></h3>
+            <div class="plate">
+              <p>Spatial model checking for medical images: logic and neural networks in one plan a doctor can audit.</p>
+              <p class="with">made with spatial logic, model checking, neural networks, Python</p>
             </div>
           </li>
-          <li class="card">
-            <div class="frame" data-fx="register"><img src="assets/tiles/learn-with-love.webp" width="800" height="500" alt="Learn With Love: the unicorn and the title" /></div>
-            <div class="body">
-              <h2><a href="https://learn-with-love.github.io/">Learn With Love</a></h2>
-              <p class="meta">Games · free</p>
-              <p class="desc">Small games for learning, with a unicorn for a friend. Free, no ads, no personal data beyond a first name.</p>
-              <span class="go" aria-hidden="true">learn-with-love.github.io</span>
+          <li class="piece">
+            <canvas class="b-wide" data-banner data-fx="ripple" data-logo="assets/logos/learn-with-love.png" data-visual="assets/learn-with-love.jpg" aria-hidden="true"></canvas>
+            <canvas class="b-logo" data-banner data-logo="assets/logos/learn-with-love.png" aria-hidden="true"></canvas>
+            <canvas class="b-pic" data-banner data-visual="assets/learn-with-love.jpg" aria-hidden="true"></canvas>
+            <h3 class="name"><a href="https://learn-with-love.github.io/">Learn With Love</a></h3>
+            <div class="plate">
+              <p>Small learning games for children, with a unicorn for a friend. Free, no ads.</p>
+              <p class="with">made with TypeScript, Vite, the browser</p>
             </div>
           </li>
         </ul>
 
         <section class="tools" aria-label="Small utilities">
-          <p class="label">small utilities</p>
+          <h2 class="head small">Small utilities</h2>
           <ul>
             <li>
               <a class="tool" href="https://make-become.github.io/lid-awake/">
                 <img src="assets/lid-awake-icon.png" width="128" height="128" alt="" loading="lazy" />
-                <div><h3>Lid Awake</h3><p>Keeps a MacBook running with the lid closed, for one long job. Mac.</p></div>
-                <span class="arrow" aria-hidden="true">→</span>
+                <h3>Lid Awake</h3><p>Keeps a closed MacBook running.</p>
               </a>
             </li>
             <li>
               <a class="tool" href="https://make-become.github.io/claude-switcher/">
                 <img src="assets/claude-switcher-icon.png" width="128" height="128" alt="" loading="lazy" />
-                <div><h3>Claude Switcher</h3><p>Several Claude Desktop accounts side by side, one icon each. Mac and Windows.</p></div>
-                <span class="arrow" aria-hidden="true">→</span>
+                <h3>Claude Switcher</h3><p>Claude Desktop accounts side by side.</p>
+              </a>
+            </li>
+            <li>
+              <a class="tool" href="https://vincenzoml.github.io/podman-minimal/">
+                <img src="assets/podman-minimal-icon.svg" width="128" height="128" alt="" loading="lazy" />
+                <h3>podman-minimal</h3><p>Throwaway dev environments from any folder.</p>
               </a>
             </li>
           </ul>
@@ -254,8 +275,7 @@
     </main>
 
     <footer class="end wrap">
-      <p class="say"><span class="a">I don’t just make.</span> <span class="b">I make become.</span></p>
-      <p class="since">Making things become since August 2023</p>
+      <p class="who">Researcher and AI architect at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a>, ISTI–CNR, Pisa. Papers and teaching at <a href="https://vincenzoml.github.io">vincenzoml.github.io</a>.</p>
       <div class="foot">
         <nav aria-label="make become elsewhere">
           <a href="https://www.anymatix.com/">anymatix.com</a>
@@ -274,5 +294,37 @@
     </footer>
 
     <script type="module" src="assets/site.js"></script>
+    <script>
+      // layout trial: ?layout=a, b or c (b, alternating, by default)
+      document.documentElement.dataset.layout = (new URLSearchParams(location.search).get('layout') || 'b').replace(/[^abc]/g, '') || 'b';
+    </script>
+    <script type="module" src="assets/noise.js"></script>
+    <script type="module">
+      // the top bar stays on screen while scrolling, smaller once it has stuck
+      const bar = document.querySelector('.bar');
+      const stuck = () => bar.classList.toggle('stuck', bar.offsetHeight > 0 && bar.getBoundingClientRect().top <= 0 && scrollY > 0);
+      addEventListener('scroll', stuck, { passive: true }); stuck();
+      // the pieces float: each gets --f, its distance from the middle of the screen (-1 to 1), reached with a little lag
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const pieces = [...document.querySelectorAll('.piece')].map((el) => ({ el, f: 0, to: 0 }));
+        let busy = 0;
+        const aim = () => {
+          const h = innerHeight;
+          for (const p of pieces) { const r = p.el.getBoundingClientRect(); p.to = r.height ? Math.max(-1, Math.min(1, (r.top + r.height / 2 - h / 2) / h)) : 0; }
+        };
+        const step = () => {
+          busy = 0; aim();
+          let moving = false;
+          for (const p of pieces) {
+            p.f += (p.to - p.f) * 0.1;
+            if (Math.abs(p.to - p.f) > 0.001) moving = true; else p.f = p.to;
+            p.el.style.setProperty('--f', p.f.toFixed(4));
+          }
+          if (moving) busy = requestAnimationFrame(step);
+        };
+        const go = () => { if (!busy) busy = requestAnimationFrame(step); };
+        addEventListener('scroll', go, { passive: true }); addEventListener('resize', go); go();
+      }
+    </script>
   </body>
 </html>
