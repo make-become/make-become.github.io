@@ -119,10 +119,13 @@
       .plate .with { margin-top: 10px; color: var(--make); font-size: 13.5px; }
       /* the pieces float: banners and their text drift apart as the page scrolls (--f, where the piece is on screen),
          and bob gently, out of step with each other, while the page is still (--b) */
-      .piece .banner { transform: translate3d(0, calc(var(--f, 0) * -90px + var(--b, 0) * 9px), 0); will-change: transform; }
-      .piece .name, .piece .plate { transform: translate3d(0, calc(var(--f, 0) * 60px - var(--b, 0) * 6px), 0); will-change: transform; }
+      .piece { --drift-banner: -90px; --drift-text: 60px; --bob-banner: 9px; --bob-text: -6px; }
+      .piece .banner { transform: translate3d(0, calc(var(--f, 0) * var(--drift-banner) + var(--b, 0) * var(--bob-banner)), 0); will-change: transform; }
+      .piece .name, .piece .plate { transform: translate3d(0, calc(var(--f, 0) * var(--drift-text) + var(--b, 0) * var(--bob-text)), 0); will-change: transform; }
       @media (max-width: 760px) {
         .piece { display: flex; flex-direction: column; align-items: stretch; }
+        /* stacked, the banner and its text move together, and only a little, so they never overlap */
+        .piece { --drift-banner: -12px; --drift-text: -12px; --bob-banner: 4px; --bob-text: 4px; }
         .piece .banner { aspect-ratio: 2 / 1; margin-bottom: 22px; }
         .piece .banner canvas { inset: -14px; width: calc(100% + 28px); height: calc(100% + 28px); }
         .piece .name { font-size: clamp(40px, 12vw, 60px); margin-bottom: 16px; align-self: auto; }
