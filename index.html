@@ -117,6 +117,9 @@
       .plate p { max-width: 44ch; margin: 0; font-size: 16px; line-height: 1.55; }
       .plate p:first-child { text-box: trim-start cap alphabetic; }
       .plate .with { margin-top: 10px; color: var(--make); font-size: 13.5px; }
+      .plate .lab { margin-top: 12px; }
+      .plate .lab a { position: relative; z-index: 2; display: inline-block; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--text); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-decoration: none; }
+      .plate .lab a:hover, .plate .lab a:focus-visible { color: var(--become); border-color: var(--make); }
       /* the pieces float: banners and their text drift apart as the page scrolls (--f, where the piece is on screen),
          and bob gently, out of step with each other, while the page is still (--b) */
       .piece { --drift-banner: -90px; --drift-text: 60px; --bob-banner: 9px; --bob-text: -6px; }
@@ -186,7 +189,7 @@
       <section class="work wrap" id="work" aria-label="Work">
         <!-- Hidden for now (Transient): images and copy are in assets/transient.jpg; add a card here to show it again. -->
         <h2 class="head">Selected work</h2>
-        <p class="lead">I build software that makes hard things usable: generative image and video for people who are not engineers, formal methods for code written with AI, logic that reads medical images. Some of it comes out of my research at CNR, some of it I make and run myself. I have been writing software for over forty years; these are the projects I am working on now.</p>
+        <p class="lead">I build software that makes hard things usable: generative image and video for people who are not engineers, formal methods for code written with AI, logic that reads medical images. Some of it comes out of my research at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a> of <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>, some of it I make and run myself. I have been writing software for over forty years; these are the projects I am working on now.</p>
         <ul class="hang">
           <li class="piece">
             <div class="banner"><canvas data-banner data-fx="diffuse" data-logo="assets/logos/anymatix.png" data-visual="assets/tiles/anymatix.webp" aria-hidden="true"></canvas></div>
@@ -202,6 +205,7 @@
             <div class="plate">
               <p>Software built by AI agents, kept honest: every change planned, tested and proven, with the record in the repository.</p>
               <p class="with">made with AI agents, formal models, TypeScript, Deno, git</p>
+              <p class="lab"><a href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR, Pisa">ISTI–CNR</a></p>
             </div>
           </li>
           <li class="piece">
@@ -210,6 +214,7 @@
             <div class="plate">
               <p>Spatial model checking for medical images: logic and neural networks in one plan a doctor can audit.</p>
               <p class="with">made with spatial logic, model checking, neural networks, Python</p>
+              <p class="lab"><a href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR, Pisa">ISTI–CNR</a></p>
             </div>
           </li>
           <li class="piece">
@@ -261,7 +266,7 @@
     </main>
 
     <footer class="end wrap">
-      <p class="who">Researcher and AI architect at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a>, ISTI–CNR, Pisa. Papers and teaching at <a href="https://vincenzoml.github.io">vincenzoml.github.io</a>.</p>
+      <p class="who">Researcher and AI architect at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a>, <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>, Pisa. Papers and teaching at <a href="https://vincenzoml.github.io">vincenzoml.github.io</a>.</p>
       <div class="foot">
         <nav aria-label="make become elsewhere">
           <a href="https://www.anymatix.com/">anymatix.com</a>
