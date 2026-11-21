@@ -118,6 +118,8 @@
       .plate p:first-child { text-box: trim-start cap alphabetic; }
       .plate .with { margin-top: 10px; color: var(--make); font-size: 13.5px; }
       .plate .lab { margin-top: 12px; }
+      .plate .lab { display: flex; flex-wrap: wrap; gap: 6px; }
+      .plate .lab span { display: inline-block; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--make); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; }
       .plate .lab a { position: relative; z-index: 2; display: inline-block; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--text); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-decoration: none; }
       .plate .lab a:hover, .plate .lab a:focus-visible { color: var(--become); border-color: var(--make); }
       /* the pieces float: banners and their text drift apart as the page scrolls (--f, where the piece is on screen),
@@ -189,7 +191,7 @@
       <section class="work wrap" id="work" aria-label="Work">
         <!-- Hidden for now (Transient): images and copy are in assets/transient.jpg; add a card here to show it again. -->
         <h2 class="head">Selected work</h2>
-        <p class="lead">I build software that makes hard things usable: generative image and video for people who are not engineers, formal methods for code written with AI, logic that reads medical images. Some of it comes out of my research at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a> of <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>, some of it I make and run myself. I have been writing software for over forty years; these are the projects I am working on now.</p>
+        <p class="lead">I build software that makes hard things usable: generative image and video for people who are not engineers, formal methods for code written with AI, logic that reads medical images. Some of it comes out of my research at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a> of <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>, some of it I make and run myself, and some I make on commission. I have been writing software for over forty years; these are the projects I am working on now.</p>
         <ul class="hang">
           <li class="piece">
             <div class="banner"><canvas data-banner data-fx="diffuse" data-logo="assets/logos/anymatix.png" data-visual="assets/tiles/anymatix.webp" aria-hidden="true"></canvas></div>
@@ -205,7 +207,7 @@
             <div class="plate">
               <p>Software built by AI agents, kept honest: every change planned, tested and proven, with the record in the repository.</p>
               <p class="with">made with AI agents, formal models, TypeScript, Deno, git</p>
-              <p class="lab"><a href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR, Pisa">ISTI–CNR</a></p>
+              <p class="lab"><span>Beta</span><a href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR, Pisa">ISTI–CNR</a></p>
             </div>
           </li>
           <li class="piece">
@@ -214,14 +216,14 @@
             <div class="plate">
               <p>Spatial model checking for medical images: logic and neural networks in one plan a doctor can audit.</p>
               <p class="with">made with spatial logic, model checking, neural networks, Python</p>
-              <p class="lab"><a href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR, Pisa">ISTI–CNR</a></p>
+              <p class="lab"><span>In development</span><a href="https://fmt.isti.cnr.it/" title="Formal Methods and Tools lab, ISTI–CNR, Pisa">ISTI–CNR</a></p>
             </div>
           </li>
           <li class="piece">
             <div class="banner"><canvas data-banner data-fx="ripple" data-logo="assets/logos/learn-with-love.png" data-visual="assets/learn-with-love.jpg" aria-hidden="true"></canvas></div>
             <h3 class="name"><a href="https://learn-with-love.github.io/">Learn With Love</a></h3>
             <div class="plate">
-              <p>Small learning games for children, with a unicorn for a friend. Free, no ads.</p>
+              <p>Small learning games for children, with a unicorn for a friend. Free, no ads, no personal data beyond a first name.</p>
               <p class="with">made with TypeScript, Vite, the browser</p>
             </div>
           </li>
@@ -233,13 +235,13 @@
             <li>
               <a class="tool" href="https://make-become.github.io/lid-awake/">
                 <img src="assets/lid-awake-icon.png" width="128" height="128" alt="" loading="lazy" />
-                <h3>Lid Awake</h3><p>Keeps a closed MacBook running.</p>
+                <h3>Lid Awake</h3><p>Keeps a closed MacBook running. Mac.</p>
               </a>
             </li>
             <li>
               <a class="tool" href="https://make-become.github.io/claude-switcher/">
                 <img src="assets/claude-switcher-icon.png" width="128" height="128" alt="" loading="lazy" />
-                <h3>Claude Switcher</h3><p>Claude Desktop accounts side by side.</p>
+                <h3>Claude Switcher</h3><p>Claude Desktop accounts side by side. Mac and Windows.</p>
               </a>
             </li>
             <li>
@@ -266,7 +268,7 @@
     </main>
 
     <footer class="end wrap">
-      <p class="who">Researcher and AI architect at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a>, <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>, Pisa. Papers and teaching at <a href="https://vincenzoml.github.io">vincenzoml.github.io</a>.</p>
+      <p class="who">Researcher and AI architect at the <a href="https://fmt.isti.cnr.it/">Formal Methods and Tools lab</a>, <a href="https://www.isti.cnr.it/">ISTI</a>–<a href="https://www.cnr.it/">CNR</a>, Pisa, and teacher of Program Semantics at the <a href="https://www.unipi.it/">University of Pisa</a>. Papers and teaching at <a href="https://vincenzoml.github.io">vincenzoml.github.io</a>.</p>
       <div class="foot">
         <nav aria-label="make become elsewhere">
           <a href="https://www.anymatix.com/">anymatix.com</a>
