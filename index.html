@@ -10,7 +10,7 @@
     />
     <meta name="theme-color" content="#15181C" />
     <meta property="og:title" content="make become · researcher and AI architect" />
-    <meta property="og:description" content="I make things. Complex things. And I make them become: beautiful, simple, useful. Researcher and AI architect; maker of Anymatix and NAIMA, co-creator of VoxLogicA." />
+    <meta property="og:description" content="Interfacing humans and machines in the AI era. I make things. Complex things. And I make them become: beautiful, simple, useful. Researcher and AI architect; maker of Anymatix and NAIMA, co-creator of VoxLogicA." />
     <meta property="og:image" content="https://make-become.github.io/assets/brand/make-become-logo-dark-1200.png" />
     <meta property="og:url" content="https://make-become.github.io/" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -68,6 +68,7 @@
       .hero h1 { margin: 0; position: absolute; inset: 0; display: grid; place-items: center; }
       .hero h1 img { width: min(84vw, 780px); height: auto; transition: opacity 0.3s; }
       .hero.on canvas { opacity: 1; }
+      .hero .line { position: absolute; z-index: 2; left: var(--gut); right: var(--gut); top: calc(50% + min(84vw, 780px) * 0.25 + 8px); margin: 0; text-align: center; font: 500 clamp(14px, 1.6vw, 19px)/1.4 Manrope, system-ui, sans-serif; letter-spacing: 0.02em; color: var(--text); }
       .js .hero h1 img, .hero.on h1 img { opacity: 0; }
       .js.still .hero h1 img { opacity: 1; }
       .nav { position: absolute; z-index: 2; top: 0; left: 0; right: 0; display: flex; justify-content: flex-end; gap: clamp(18px, 3vw, 36px); padding: 24px var(--gut); }
@@ -176,6 +177,7 @@
     <header class="hero" id="top">
       <canvas aria-hidden="true"></canvas>
       <h1><img src="assets/brand/make-become-logo-dark-transparent-outlined.svg" width="634" height="288" alt="make become. we don’t just make." /></h1>
+      <p class="line">Interfacing humans and machines in the AI era</p>
       <nav class="nav" aria-label="Sections">
         <a href="#work">work</a>
         <a href="https://vincenzoml.github.io">research</a>
